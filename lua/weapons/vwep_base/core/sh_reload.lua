@@ -4,7 +4,7 @@ function VWEP:CanReload()
 
     if ( self:GetReloading() ) then return false end
 
-    // We might be wanting to switch fire modes, so prevent reloading
+    -- We might be wanting to switch fire modes, so prevent reloading
     if ( self.FireModes.Enabled and ply:KeyDown(IN_SPEED) ) then return false end
 
     return self:Clip1() < self.Primary.ClipSize and self:GetOwner():GetAmmoCount(self.Primary.Ammo) > 0
@@ -44,11 +44,11 @@ function VWEP:Reload()
             timer.Create("VWEP.Cycling." .. self:EntIndex(), self.Cycling.Delay, 0, function()
                 if ( !IsValid(self) ) then return end
 
-                // Reset the timer incase we set it to 0
+                -- Reset the timer incase we set it to 0
                 timer.Adjust("VWEP.Cycling." .. self:EntIndex(), self.Cycling.Delay, 0)
 
                 if ( self:Clip1() < self.Primary.ClipSize ) then
-                    // Reset the animation so we can replay the cycling animation
+                    -- Reset the animation so we can replay the cycling animation
                     self:ResetAnimation()
 
                     timer.Simple(0, function()

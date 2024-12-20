@@ -1,3 +1,3 @@
 VWEP = SWEP
-vwep.util:Include("cl_init.lua")
-vwep.util:Include("shared.lua")
+vanguard.util:Include("cl_init.lua")
+vanguard.util:Include("shared.lua")

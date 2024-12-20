@@ -19,7 +19,7 @@ function VWEP:ThinkFireModes()
     if ( owner:KeyDown(IN_SPEED) and owner:KeyDown(IN_RELOAD) ) then
         if ( !switchCooldown or CurTime() > switchCooldown ) then
             self:ToggleFireMode()
-            switchCooldown = CurTime() + self.FireModes.Delay // Cooldown to prevent spamming
+            switchCooldown = CurTime() + self.FireModes.Delay -- Cooldown to prevent spamming
         end
     end
 
@@ -39,23 +39,23 @@ function VWEP:ToggleFireMode()
 
     hook.Run("VWEP_PreFireModeChanged", self)
 
-    // Store the current fire mode
+    -- Store the current fire mode
     local old = self:GetFireMode()
 
-    // Increment the current fire mode
+    -- Increment the current fire mode
     self:SetFireMode(self:GetFireMode() + 1)
 
-    // Loop back to the beginning
+    -- Loop back to the beginning
     if ( self:GetFireMode() > #self.FireModes.List ) then
         self:SetFireMode(1)
     end
 
-    // Update settings
+    -- Update settings
     local mode = self.FireModes.List[self:GetFireMode()]
     self.Primary.Automatic = self.FireModes.Settings[mode].Automatic
     self.Primary.BurstCount = self.FireModes.Settings[mode].BurstCount
 
-    // Sounds
+    -- Sounds
     if ( self.FireModes.Sound ) then
         self:EmitSound(self.FireModes.Sound, self.FireModes.SoundLevel or 75, self.FireModes.SoundPitch or 100, self.FireModes.SoundVolume or 1, self.FireModes.SoundChannel or CHAN_AUTO)
     end

@@ -22,7 +22,7 @@ function VWEP:DrawWorldModel()
     end
 
     local pos, ang = matrix:GetTranslation(), matrix:GetAngles()
-    pos, ang = vwep.util:Translate(pos, ang, self.WorldModelOffset or Vector(), self.WorldModelOffsetAng or Angle())
+    pos, ang = vanguard.util:Translate(pos, ang, self.WorldModelOffset or Vector(), self.WorldModelOffsetAng or Angle())
 
     if ( !IsValid(WorldModel) ) then
         WorldModel = ClientsideModel(self.WorldModel, RENDERGROUP_OTHER)

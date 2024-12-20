@@ -57,7 +57,7 @@ function VWEP:PreDrawViewModel(vm, weapon, ply)
         vm:SetSkin(self.ViewModelSkin)
     end
 
-    for k, v in pairs(self.ViewModelBodygroups or {}) do // don't use ipairs, can't guarantee sequential order
+    for k, v in pairs(self.ViewModelBodygroups or {}) do -- don't use ipairs, can't guarantee sequential order
         if ( !isnumber(k) or !isnumber(v) ) then continue end
 
         if ( vm:GetBodygroup(k) != v ) then
@@ -121,7 +121,7 @@ function VWEP:PreDrawViewModel(vm, weapon, ply)
                 element:SetSkin(v.Skin or 0)
             end
 
-            for k, v in pairs(v.Bodygroups or {}) do // don't use ipairs, can't guarantee sequential order
+            for k, v in pairs(v.Bodygroups or {}) do -- don't use ipairs, can't guarantee sequential order
                 if ( !isnumber(k) or !isnumber(v) ) then continue end
 
                 if ( element:GetBodygroup(k) != v ) then

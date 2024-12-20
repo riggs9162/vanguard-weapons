@@ -1,5 +1,5 @@
 VWEP = SWEP
-vwep.util:Include("shared.lua")
+vanguard.util:Include("shared.lua")
 
 local lerpFOV
 local lerpLastUpdate = 0

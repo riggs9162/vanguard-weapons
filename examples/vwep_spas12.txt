@@ -125,4 +125,4 @@ SWEP.WorldModelColor = Color(255, 255, 255, 255)
 SWEP.WorldModelRenderMode = RENDERMODE_NORMAL
 SWEP.WorldModelRenderFX = kRenderFxNone
 
-vwep.sounds:Register("VWEP.SPAS12.Single", "weapons/shotgun/shotgun_fire7.wav", {98, 101}, 1, 100)
+vanguard.sounds:Register("VWEP.SPAS12.Single", "weapons/shotgun/shotgun_fire7.wav", {98, 101}, 1, 100)

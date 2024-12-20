@@ -1,173 +1,174 @@
 VWEP = SWEP
-vwep.util:IncludeDir("weapons/vwep_base/core")
 
-// Information
-VWEP.PrintName = "Vanguard Weapon Base" // Weapon name in the HUD
-VWEP.Author = "Riggs" // Author
-VWEP.Instructions = "Left click to shoot, right click to zoom." // Instructions
-VWEP.Category = "Vanguard" // Category in the spawn menu
-VWEP.IsVWEP = true // Mark this as a Vanguard Weapon Base Weapon, useful for other scripts
+vanguard.util:IncludeDir("weapons/vwep_base/core")
 
-// Weapon settings
-VWEP.Slot = 1 // Slot in the weapon selection menu
-VWEP.SlotPos = 1 // Slot position
-VWEP.DrawAmmo = true // Draw the ammo count
-VWEP.DrawCrosshair = true // Draw the crosshair
-VWEP.DrawWeaponInfoBox = false // Draw the weapon info box
+-- Information
+VWEP.PrintName = "Vanguard Weapon Base" -- Weapon name in the HUD
+VWEP.Author = "Riggs" -- Author
+VWEP.Instructions = "Left click to shoot, right click to zoom." -- Instructions
+VWEP.Category = "Vanguard" -- Category in the spawn menu
+VWEP.IsVWEP = true -- Mark this as a Vanguard Weapon Base Weapon, useful for other scripts
 
-// Base weapon settings
-VWEP.Spawnable = false // Can be spawned via the Q menu
-VWEP.AdminOnly = false // Admin only spawn
+-- Weapon settings
+VWEP.Slot = 1 -- Slot in the weapon selection menu
+VWEP.SlotPos = 1 -- Slot position
+VWEP.DrawAmmo = true -- Draw the ammo count
+VWEP.DrawCrosshair = true -- Draw the crosshair
+VWEP.DrawWeaponInfoBox = false -- Draw the weapon info box
 
-// Secondary gun settings, unused for now
-VWEP.Secondary.ClipSize = -1 // No secondary clip
-VWEP.Secondary.DefaultClip = -1 // No secondary default clip
-VWEP.Secondary.Automatic = false // Secondary fire automatic?
-VWEP.Secondary.Ammo = "none" // No secondary ammo
-VWEP.Secondary.Delay = 0.5 // Secondary fire delay
+-- Base weapon settings
+VWEP.Spawnable = false -- Can be spawned via the Q menu
+VWEP.AdminOnly = false -- Admin only spawn
 
-// Weapon settings
-VWEP.HoldType = "pistol" // Weapon hold type
-VWEP.UseHands = true // Use hands model
-VWEP.Sensitivity = 1 // Sensitivity when not aiming
+-- Secondary gun settings, unused for now
+VWEP.Secondary.ClipSize = -1 -- No secondary clip
+VWEP.Secondary.DefaultClip = -1 -- No secondary default clip
+VWEP.Secondary.Automatic = false -- Secondary fire automatic?
+VWEP.Secondary.Ammo = "none" -- No secondary ammo
+VWEP.Secondary.Delay = 0.5 -- Secondary fire delay
 
-// Primary gun settings
-VWEP.Primary.ClipSize = 18 // Size of a clip
-VWEP.Primary.DefaultClip = 18 // Default number of bullets in a clip
-VWEP.Primary.Automatic = false // Is this weapon automatic
-VWEP.Primary.Ammo = "Pistol" // Type of ammo
+-- Weapon settings
+VWEP.HoldType = "pistol" -- Weapon hold type
+VWEP.UseHands = true -- Use hands model
+VWEP.Sensitivity = 1 -- Sensitivity when not aiming
 
-// Primary fire settings
-VWEP.Primary.Recoil = 1 // Recoil effect
-VWEP.Primary.Damage = 10 // Damage per shot
-VWEP.Primary.NumShots = 1 // Number of shots per trigger pull
-VWEP.Primary.Cone = 0.02 // Bullet spread
-VWEP.Primary.Delay = 0.5 // Delay between shots
-VWEP.Primary.RPM = 400 // Rounds per minute, this is used instead of delay if it's set
-VWEP.Primary.Sequence = ACT_VM_PRIMARYATTACK // The shoot animation
-VWEP.Primary.SequenceIronSights = ACT_VM_PRIMARYATTACK // The shoot animation when iron sighting
-VWEP.Primary.PlaybackRate = 1 // The playback rate of the shoot animation
-VWEP.Primary.BurstCount = 0 // Number of shots per burst, 0 for no burst
-VWEP.Primary.BurstDelay = 0.2 // Delay between waves of a burst
+-- Primary gun settings
+VWEP.Primary.ClipSize = 18 -- Size of a clip
+VWEP.Primary.DefaultClip = 18 -- Default number of bullets in a clip
+VWEP.Primary.Automatic = false -- Is this weapon automatic
+VWEP.Primary.Ammo = "Pistol" -- Type of ammo
 
-// Primary sound settings
-VWEP.Primary.Sound = Sound("Weapon_Pistol.Single") // Primary fire
-VWEP.Primary.SoundEmpty = Sound("Weapon_Pistol.Empty") // Primary fire when empty
-VWEP.Primary.SoundLevel = 100 // Sound level, used for sound distance
-VWEP.Primary.SoundPitch = 100 // Sound pitch
-VWEP.Primary.SoundVolume = 1 // Sound volume
-VWEP.Primary.SoundChannel = CHAN_WEAPON // Sound channel
+-- Primary fire settings
+VWEP.Primary.Recoil = 1 -- Recoil effect
+VWEP.Primary.Damage = 10 -- Damage per shot
+VWEP.Primary.NumShots = 1 -- Number of shots per trigger pull
+VWEP.Primary.Cone = 0.02 -- Bullet spread
+VWEP.Primary.Delay = 0.5 -- Delay between shots
+VWEP.Primary.RPM = 400 -- Rounds per minute, this is used instead of delay if it's set
+VWEP.Primary.Sequence = ACT_VM_PRIMARYATTACK -- The shoot animation
+VWEP.Primary.SequenceIronSights = ACT_VM_PRIMARYATTACK -- The shoot animation when iron sighting
+VWEP.Primary.PlaybackRate = 1 -- The playback rate of the shoot animation
+VWEP.Primary.BurstCount = 0 -- Number of shots per burst, 0 for no burst
+VWEP.Primary.BurstDelay = 0.2 -- Delay between waves of a burst
 
-// Iron sights settings
-VWEP.IronSightsEnabled = true // Enable iron sights
-VWEP.IronSightsPos = Vector(-5.95, -9.2, 2.7) // Iron sights position
-VWEP.IronSightsAng = Vector(2.6, 1.37, 3.5) // Iron sights angle
-VWEP.IronSightsFOV = 0.75 // Iron sights field of view
-VWEP.IronSightsSensitivity = 0.5 // Iron sights sensitivity
-VWEP.IronSightsCanMove = true // Can the player iron sight while moving?
-VWEP.IronSightsCanMoveRun = false // Can the player iron sight while running?
-VWEP.IronSightsRunSpeed = 0.75 // Check if the player is marked as running at this speed
-VWEP.IronSightsToggle = false // Is the iron sight a toggle mechanism, mark as false if it's a hold mechanism
+-- Primary sound settings
+VWEP.Primary.Sound = Sound("Weapon_Pistol.Single") -- Primary fire
+VWEP.Primary.SoundEmpty = Sound("Weapon_Pistol.Empty") -- Primary fire when empty
+VWEP.Primary.SoundLevel = 100 -- Sound level, used for sound distance
+VWEP.Primary.SoundPitch = 100 -- Sound pitch
+VWEP.Primary.SoundVolume = 1 -- Sound volume
+VWEP.Primary.SoundChannel = CHAN_WEAPON -- Sound channel
 
-// Reloading settings
+-- Iron sights settings
+VWEP.IronSightsEnabled = true -- Enable iron sights
+VWEP.IronSightsPos = Vector(-5.95, -9.2, 2.7) -- Iron sights position
+VWEP.IronSightsAng = Vector(2.6, 1.37, 3.5) -- Iron sights angle
+VWEP.IronSightsFOV = 0.75 -- Iron sights field of view
+VWEP.IronSightsSensitivity = 0.5 -- Iron sights sensitivity
+VWEP.IronSightsCanMove = true -- Can the player iron sight while moving?
+VWEP.IronSightsCanMoveRun = false -- Can the player iron sight while running?
+VWEP.IronSightsRunSpeed = 0.75 -- Check if the player is marked as running at this speed
+VWEP.IronSightsToggle = false -- Is the iron sight a toggle mechanism, mark as false if it's a hold mechanism
+
+-- Reloading settings
 VWEP.Reloading = {}
-VWEP.Reloading.Sequence = ACT_VM_RELOAD // The reload animation
-VWEP.Reloading.SequenceIronSights = ACT_VM_RELOAD // The reload animation when iron sighting
-VWEP.Reloading.PlaybackRate = 1 // The playback rate of the reload animation
-VWEP.Reloading.Sound = Sound("Weapon_Pistol.Reload") // The reload sound
-VWEP.Reloading.SoundLevel = 60 // The reload sound level, used for sound distance
-VWEP.Reloading.SoundPitch = 100 // The reload sound pitch
-VWEP.Reloading.SoundVolume = 1 // The reload sound volume
-VWEP.Reloading.SoundChannel = CHAN_WEAPON // The reload sound channel
+VWEP.Reloading.Sequence = ACT_VM_RELOAD -- The reload animation
+VWEP.Reloading.SequenceIronSights = ACT_VM_RELOAD -- The reload animation when iron sighting
+VWEP.Reloading.PlaybackRate = 1 -- The playback rate of the reload animation
+VWEP.Reloading.Sound = Sound("Weapon_Pistol.Reload") -- The reload sound
+VWEP.Reloading.SoundLevel = 60 -- The reload sound level, used for sound distance
+VWEP.Reloading.SoundPitch = 100 -- The reload sound pitch
+VWEP.Reloading.SoundVolume = 1 -- The reload sound volume
+VWEP.Reloading.SoundChannel = CHAN_WEAPON -- The reload sound channel
 
-// Cycling settings
+-- Cycling settings
 VWEP.Cycling = {}
-VWEP.Cycling.Enabled = false // Enable cycling
-VWEP.Cycling.Ammo = 1 // The ammo to give when cycling
-VWEP.Cycling.SequenceEntry = nil // The cycling entry animation
-VWEP.Cycling.Sequence = ACT_VM_RELOAD // The cycling animation
-VWEP.Cycling.SequenceExit = nil // The cycling exit animation
-VWEP.Cycling.SequenceIronSightsEntry = nil // The cycling entry animation when iron sighting
-VWEP.Cycling.SequenceIronSights = ACT_VM_RELOAD // The cycling animation when iron sighting
-VWEP.Cycling.SequenceIronSightsExit = nil // The cycling exit animation when iron sighting
-VWEP.Cycling.PlaybackRate = 1 // The playback rate of the cycling animation
-VWEP.Cycling.Sound = Sound("Weapon_Pistol.Reload") // The cycling sound
-VWEP.Cycling.SoundLevel = 60 // The cycling sound level, used for sound distance
-VWEP.Cycling.SoundPitch = 100 // The cycling sound pitch
-VWEP.Cycling.SoundVolume = 1 // The cycling sound volume
-VWEP.Cycling.SoundChannel = CHAN_WEAPON // The cycling sound channel
-VWEP.Cycling.Delay = 0.5 // The delay between cycling
-VWEP.Cycling.Automatic = false // Is the cycling automatic?
+VWEP.Cycling.Enabled = false -- Enable cycling
+VWEP.Cycling.Ammo = 1 -- The ammo to give when cycling
+VWEP.Cycling.SequenceEntry = nil -- The cycling entry animation
+VWEP.Cycling.Sequence = ACT_VM_RELOAD -- The cycling animation
+VWEP.Cycling.SequenceExit = nil -- The cycling exit animation
+VWEP.Cycling.SequenceIronSightsEntry = nil -- The cycling entry animation when iron sighting
+VWEP.Cycling.SequenceIronSights = ACT_VM_RELOAD -- The cycling animation when iron sighting
+VWEP.Cycling.SequenceIronSightsExit = nil -- The cycling exit animation when iron sighting
+VWEP.Cycling.PlaybackRate = 1 -- The playback rate of the cycling animation
+VWEP.Cycling.Sound = Sound("Weapon_Pistol.Reload") -- The cycling sound
+VWEP.Cycling.SoundLevel = 60 -- The cycling sound level, used for sound distance
+VWEP.Cycling.SoundPitch = 100 -- The cycling sound pitch
+VWEP.Cycling.SoundVolume = 1 -- The cycling sound volume
+VWEP.Cycling.SoundChannel = CHAN_WEAPON -- The cycling sound channel
+VWEP.Cycling.Delay = 0.5 -- The delay between cycling
+VWEP.Cycling.Automatic = false -- Is the cycling automatic?
 
-// Pump action settings
+-- Pump action settings
 VWEP.PumpAction = {}
-VWEP.PumpAction.Enabled = false // Enable pump action
-VWEP.PumpAction.Sequence = ACT_SHOTGUN_PUMP // The pump action animation
-VWEP.PumpAction.SequenceIronSights = ACT_SHOTGUN_PUMP // The pump action animation when iron sighting
-VWEP.PumpAction.PlaybackRate = 1 // The playback rate of the pump action animation
-VWEP.PumpAction.Sound = Sound("Weapon_Shotgun.Special1") // The pump action sound
-VWEP.PumpAction.SoundLevel = 60 // The pump action sound level, used for sound distance
-VWEP.PumpAction.SoundPitch = 100 // The pump action sound pitch
-VWEP.PumpAction.SoundVolume = 1 // The pump action sound volume
-VWEP.PumpAction.SoundChannel = CHAN_WEAPON // The pump action sound channel
+VWEP.PumpAction.Enabled = false -- Enable pump action
+VWEP.PumpAction.Sequence = ACT_SHOTGUN_PUMP -- The pump action animation
+VWEP.PumpAction.SequenceIronSights = ACT_SHOTGUN_PUMP -- The pump action animation when iron sighting
+VWEP.PumpAction.PlaybackRate = 1 -- The playback rate of the pump action animation
+VWEP.PumpAction.Sound = Sound("Weapon_Shotgun.Special1") -- The pump action sound
+VWEP.PumpAction.SoundLevel = 60 -- The pump action sound level, used for sound distance
+VWEP.PumpAction.SoundPitch = 100 -- The pump action sound pitch
+VWEP.PumpAction.SoundVolume = 1 -- The pump action sound volume
+VWEP.PumpAction.SoundChannel = CHAN_WEAPON -- The pump action sound channel
 
-// Viewmodel settings
-VWEP.ViewModel = "models/weapons/c_pistol.mdl" // The model used in first-person view
-VWEP.ViewModelSkin = 0 // Viewmodel skin
-VWEP.ViewModelBodygroups = {} // Viewmodel bodygroups
-VWEP.ViewModelFOV = 62 // Viewmodel field of view
-VWEP.ViewModelFlip = false // Flip the viewmodel
-VWEP.ViewModelOffset = Vector(0, 0, 0) // Viewmodel offset
-VWEP.ViewModelOffsetAng = Angle(0, 0, 0) // Viewmodel angle offset
-VWEP.ViewModelScale = 1 // Viewmodel scale
+-- Viewmodel settings
+VWEP.ViewModel = "models/weapons/c_pistol.mdl" -- The model used in first-person view
+VWEP.ViewModelSkin = 0 -- Viewmodel skin
+VWEP.ViewModelBodygroups = {} -- Viewmodel bodygroups
+VWEP.ViewModelFOV = 62 -- Viewmodel field of view
+VWEP.ViewModelFlip = false -- Flip the viewmodel
+VWEP.ViewModelOffset = Vector(0, 0, 0) -- Viewmodel offset
+VWEP.ViewModelOffsetAng = Angle(0, 0, 0) -- Viewmodel angle offset
+VWEP.ViewModelScale = 1 -- Viewmodel scale
 VWEP.ViewModelDynamicLights = {
-    --{Pos = Vector(0, 0, 0), Brightness = 1, Size = 1, Decay = 100, Color = Color(255, 255, 255, 255)} // Example
+    --{Pos = Vector(0, 0, 0), Brightness = 1, Size = 1, Decay = 100, Color = Color(255, 255, 255, 255)} -- Example
 }
 
-VWEP.ViewModelMaterial = "" // Viewmodel material
-VWEP.ViewModelColor = Color(255, 255, 255, 255) // Viewmodel color
-VWEP.ViewModelRenderMode = RENDERMODE_NORMAL // Viewmodel render mode
-VWEP.ViewModelRenderFX = kRenderFxNone // Viewmodel render fx
+VWEP.ViewModelMaterial = "" -- Viewmodel material
+VWEP.ViewModelColor = Color(255, 255, 255, 255) -- Viewmodel color
+VWEP.ViewModelRenderMode = RENDERMODE_NORMAL -- Viewmodel render mode
+VWEP.ViewModelRenderFX = kRenderFxNone -- Viewmodel render fx
 
-// Worldmodel settings
-VWEP.WorldModel = "models/weapons/w_pistol.mdl" // The model used in third-person view
-VWEP.WorldModelSkin = 0 // Worldmodel skin
-VWEP.WorldModelBodygroups = {} // Worldmodel bodygroups
-VWEP.WorldModelBone = "ValveBiped.Bip01_R_Hand" // The bone to attach the worldmodel to
-VWEP.WorldModelOffset = Vector(0, 0, 0) // Worldmodel offset
-VWEP.WorldModelOffsetAng = Angle(0, 0, 0) // Worldmodel angle offset
-VWEP.WorldModelScale = 1 // Worldmodel scale
+-- Worldmodel settings
+VWEP.WorldModel = "models/weapons/w_pistol.mdl" -- The model used in third-person view
+VWEP.WorldModelSkin = 0 -- Worldmodel skin
+VWEP.WorldModelBodygroups = {} -- Worldmodel bodygroups
+VWEP.WorldModelBone = "ValveBiped.Bip01_R_Hand" -- The bone to attach the worldmodel to
+VWEP.WorldModelOffset = Vector(0, 0, 0) -- Worldmodel offset
+VWEP.WorldModelOffsetAng = Angle(0, 0, 0) -- Worldmodel angle offset
+VWEP.WorldModelScale = 1 -- Worldmodel scale
 VWEP.WorldModelDynamicLights = {
-    --{Pos = Vector(0, 0, 0), Brightness = 1, Size = 1, Decay = 100, Color = Color(255, 255, 255)} // Example
+    --{Pos = Vector(0, 0, 0), Brightness = 1, Size = 1, Decay = 100, Color = Color(255, 255, 255)} -- Example
 }
 
-VWEP.WorldModelMaterial = "" // Worldmodel material
-VWEP.WorldModelColor = Color(255, 255, 255, 255) // Worldmodel color
-VWEP.WorldModelRenderMode = RENDERMODE_NORMAL // Worldmodel render mode
-VWEP.WorldModelRenderFX = kRenderFxNone // Worldmodel render fx
+VWEP.WorldModelMaterial = "" -- Worldmodel material
+VWEP.WorldModelColor = Color(255, 255, 255, 255) -- Worldmodel color
+VWEP.WorldModelRenderMode = RENDERMODE_NORMAL -- Worldmodel render mode
+VWEP.WorldModelRenderFX = kRenderFxNone -- Worldmodel render fx
 
-// Weapon effects
+-- Weapon effects
 VWEP.Effects = {}
-VWEP.Effects.MuzzleFlash = true // Enable muzzle flash
-VWEP.Effects.MuzzleFlashEffect = "MuzzleFlash" // Muzzle flash effect
-VWEP.Effects.MuzzleFlashFlags = 1 // Muzzle flash flags
-VWEP.Effects.MuzzleFlashScale = 1 // Muzzle flash scale
-VWEP.Effects.MuzzleFlashAttachment = "muzzle" // Muzzle flash attachment
+VWEP.Effects.MuzzleFlash = true -- Enable muzzle flash
+VWEP.Effects.MuzzleFlashEffect = "MuzzleFlash" -- Muzzle flash effect
+VWEP.Effects.MuzzleFlashFlags = 1 -- Muzzle flash flags
+VWEP.Effects.MuzzleFlashScale = 1 -- Muzzle flash scale
+VWEP.Effects.MuzzleFlashAttachment = "muzzle" -- Muzzle flash attachment
 
-VWEP.Effects.Tracer = true // Enable tracer
-VWEP.Effects.TracerEffect = "Tracer" // Tracer effect
-VWEP.Effects.TracerScale = 1 // Tracer scale
-VWEP.Effects.TracerAttachment = "muzzle" // Tracer attachment
+VWEP.Effects.Tracer = true -- Enable tracer
+VWEP.Effects.TracerEffect = "Tracer" -- Tracer effect
+VWEP.Effects.TracerScale = 1 -- Tracer scale
+VWEP.Effects.TracerAttachment = "muzzle" -- Tracer attachment
 
 VWEP.FireModes = {}
-VWEP.FireModes.Enabled = false // Enable fire modes
-VWEP.FireModes.Sound = Sound("buttons/lever7.wav") // The fire mode switch sound
-VWEP.FireModes.SoundLevel = 60 // The fire mode switch sound level, used for sound distance
-VWEP.FireModes.SoundPitch = 140 // The fire mode switch sound pitch
-VWEP.FireModes.SoundVolume = 1 // The fire mode switch sound volume
-VWEP.FireModes.SoundChannel = CHAN_WEAPON // The fire mode switch sound channel
-VWEP.FireModes.SoundDelay = 0.5 // The fire mode switch sound delay
-VWEP.FireModes.Delay = 0.5 // The fire mode switch delay
+VWEP.FireModes.Enabled = false -- Enable fire modes
+VWEP.FireModes.Sound = Sound("buttons/lever7.wav") -- The fire mode switch sound
+VWEP.FireModes.SoundLevel = 60 -- The fire mode switch sound level, used for sound distance
+VWEP.FireModes.SoundPitch = 140 -- The fire mode switch sound pitch
+VWEP.FireModes.SoundVolume = 1 -- The fire mode switch sound volume
+VWEP.FireModes.SoundChannel = CHAN_WEAPON -- The fire mode switch sound channel
+VWEP.FireModes.SoundDelay = 0.5 -- The fire mode switch sound delay
+VWEP.FireModes.Delay = 0.5 -- The fire mode switch delay
 VWEP.FireModes.List = {"auto", "burst", "single"}
 VWEP.FireModes.Settings = {
     auto = {
