@@ -217,7 +217,7 @@ function VWEP:Initialize()
 end
 
 function VWEP:QueueIdle(duration)
-    local vm = self:GetOwner():GetViewModel()
+    local vm = self:GetOwner().GetViewModel and self:GetOwner():GetViewModel() or nil
     if ( !IsValid(vm) ) then return end
 
     duration = duration or vm:SequenceDuration() / vm:GetPlaybackRate()
@@ -295,7 +295,7 @@ function VWEP:Holster()
     if ( CLIENT ) then
         timer.Simple(0, function()
             if ( IsValid(self) and IsValid(self:GetOwner()) ) then
-                local vm = self:GetOwner():GetViewModel()
+                local vm = self:GetOwner().GetViewModel and self:GetOwner():GetViewModel() or nil
                 if ( IsValid(vm) ) then
                     vm:SetMaterial("")
                 end
