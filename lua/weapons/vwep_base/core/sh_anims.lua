@@ -48,6 +48,21 @@ function VWEP:GetViewModelShootAnimation()
     return shootSequence
 end
 
+function VWEP:GetViewModelPumpActionAnimation()
+    local pumpSequence = self.PumpAction.Sequence or ACT_SHOTGUN_PUMP
+    if ( self:GetIronSights() ) then
+        pumpSequence = self.PumpAction.SequenceIronSights or pumpSequence
+    end
+
+    if ( isfunction(pumpSequence) ) then
+        pumpSequence = pumpSequence(self)
+    elseif ( istable(pumpSequence) ) then
+        pumpSequence = pumpSequence[math.random(#pumpSequence)]
+    end
+
+    return pumpSequence
+end
+
 function VWEP:GetViewModelReloadAnimation(bIronsighted)
     local clip = self:Clip1()
     local reloadSequence = self.Reloading.Sequence or ACT_VM_RELOAD

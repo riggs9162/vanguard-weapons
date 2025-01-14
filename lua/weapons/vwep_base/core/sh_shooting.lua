@@ -79,22 +79,11 @@ function VWEP:ShootEffects()
 
     ply:SetAnimation(PLAYER_ATTACK1)
 
-    if ( CLIENT and self.PumpAction.Enabled ) then
+    if ( self.PumpAction.Enabled ) then
         timer.Simple(duration, function()
             if ( !IsValid(self) ) then return end
 
-            local pumpSequence = self.PumpAction.Sequence or ACT_SHOTGUN_PUMP
-            if ( self:GetIronSights() ) then
-                pumpSequence = self.PumpAction.SequenceIronSights or pumpSequence
-            end
-
-            if ( isfunction(pumpSequence) ) then
-                pumpSequence = pumpSequence(self)
-            elseif ( istable(pumpSequence) ) then
-                pumpSequence = pumpSequence[math.random(#pumpSequence)]
-            end
-
-            local pumpDuration = self:PlayAnimation(pumpSequence, self.PumpAction.PlaybackRate)
+            local _, pumpDuration = self:PlayAnimation(self:GetViewModelPumpActionAnimation(), self.PumpAction.PlaybackRate)
             self:QueueIdle()
             self:EmitSound(self.PumpAction.Sound, self.PumpAction.SoundLevel or 60, self.PumpAction.SoundPitch or 100, self.PumpAction.SoundVolume or 1, self.PumpAction.SoundChannel or CHAN_WEAPON)
         end)
@@ -127,7 +116,7 @@ function VWEP:Shoot()
 
     local ply = self:GetOwner()
     if ( CLIENT and IsValid(ply) ) then
-        local recoilAngle = Angle(-1, math.Rand(-1, 1), 0)
+        local recoilAngle = Angle(-1, math.random(-1, 1), 0)
 
         if ( self:GetIronSights() ) then
             recoilAngle = recoilAngle * ( self.Primary.RecoilIronSights or self.Primary.Recoil )
