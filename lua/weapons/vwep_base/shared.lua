@@ -70,6 +70,20 @@ VWEP.IronSightsCanMoveRun = false -- Can the player iron sight while running?
 VWEP.IronSightsRunSpeed = 0.75 -- Check if the player is marked as running at this speed
 VWEP.IronSightsToggle = false -- Is the iron sight a toggle mechanism, mark as false if it's a hold mechanism
 
+-- Iron sights enter sound settings
+VWEP.IronSightsEnterSound = Sound("weapons/zoom.wav") -- Iron sights enter sound
+VWEP.IronSightsEnterSoundLevel = 60 -- Iron sights enter sound level, used for sound distance
+VWEP.IronSightsEnterSoundPitch = 100 -- Iron sights enter sound pitch
+VWEP.IronSightsEnterSoundVolume = 1 -- Iron sights enter sound volume
+VWEP.IronSightsEnterSoundChannel = CHAN_WEAPON -- Iron sights enter sound channel
+
+-- Iron sights exit sound settings
+VWEP.IronSightsExitSound = Sound("weapons/zoom.wav") -- Iron sights exit sound
+VWEP.IronSightsExitSoundLevel = 60 -- Iron sights exit sound level, used for sound distance
+VWEP.IronSightsExitSoundPitch = 100 -- Iron sights exit sound pitch
+VWEP.IronSightsExitSoundVolume = 1 -- Iron sights exit sound volume
+VWEP.IronSightsExitSoundChannel = CHAN_WEAPON -- Iron sights exit sound channel
+
 -- Reloading settings
 VWEP.Reloading = {}
 VWEP.Reloading.Sequence = ACT_VM_RELOAD -- The reload animation
@@ -191,14 +205,60 @@ function VWEP:SetupDataTables()
     end
 
     self:NetworkVar("Bool", 0, "IronSights")
+    --self:NetworkVarNotify("IronSights", self.OnIronSightsChanged)
+    self:NetworkVarNotify("IronSights", function(name, old, new)
+        self:OnIronSightsChanged(name, old, new)
+
+        if ( CLIENT ) then
+            if ( new ) then
+                local sound = self.IronSightsEnterSound
+                if ( sound ) then
+                    self:EmitSound(sound, self.IronSightsEnterSoundLevel or 60, self.IronSightsEnterSoundPitch or 100, self.IronSightsEnterSoundVolume or 1, self.IronSightsEnterSoundChannel or CHAN_WEAPON)
+                end
+            else
+                local sound = self.IronSightsExitSound
+                if ( sound ) then
+                    self:EmitSound(sound, self.IronSightsExitSoundLevel or 60, self.IronSightsExitSoundPitch or 100, self.IronSightsExitSoundVolume or 1, self.IronSightsExitSoundChannel or CHAN_WEAPON)
+                end
+            end
+        end
+    end)
+
     self:NetworkVar("Bool", 1, "Reloading")
+    --self:NetworkVarNotify("Reloading", self.OnReloadingChanged)
+
     self:NetworkVar("Float", 0, "NextIdle")
+    --self:NetworkVarNotify("NextIdle", self.OnNextIdleChanged)
+
     self:NetworkVar("Int", 0, "FireMode")
+    --self:NetworkVarNotify("FireMode", self.OnFireModeChanged)
+
     self:NetworkVar("Int", 1, "BurstCount")
+    --self:NetworkVarNotify("BurstCount", self.OnBurstCountChanged)
 
     if ( self.PostSetupDataTables ) then
         self:PostSetupDataTables()
     end
+end
+
+function VWEP:OnIronSightsChanged(name, old, new)
+    -- Override this function to do something when the iron sights state changes
+end
+
+function VWEP:OnReloadingChanged(name, old, new)
+    -- Override this function to do something when the reloading state changes
+end
+
+function VWEP:OnNextIdleChanged(name, old, new)
+    -- Override this function to do something when the next idle time changes
+end
+
+function VWEP:OnFireModeChanged(name, old, new)
+    -- Override this function to do something when the fire mode changes
+end
+
+function VWEP:OnBurstCountChanged(name, old, new)
+    -- Override this function to do something when the burst count changes
 end
 
 function VWEP:Initialize()
