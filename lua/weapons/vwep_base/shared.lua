@@ -205,7 +205,6 @@ function VWEP:SetupDataTables()
     end
 
     self:NetworkVar("Bool", 0, "IronSights")
-    --self:NetworkVarNotify("IronSights", self.OnIronSightsChanged)
     self:NetworkVarNotify("IronSights", function(name, old, new)
         self:OnIronSightsChanged(name, old, new)
 
@@ -225,16 +224,9 @@ function VWEP:SetupDataTables()
     end)
 
     self:NetworkVar("Bool", 1, "Reloading")
-    --self:NetworkVarNotify("Reloading", self.OnReloadingChanged)
-
     self:NetworkVar("Float", 0, "NextIdle")
-    --self:NetworkVarNotify("NextIdle", self.OnNextIdleChanged)
-
     self:NetworkVar("Int", 0, "FireMode")
-    --self:NetworkVarNotify("FireMode", self.OnFireModeChanged)
-
     self:NetworkVar("Int", 1, "BurstCount")
-    --self:NetworkVarNotify("BurstCount", self.OnBurstCountChanged)
 
     if ( self.PostSetupDataTables ) then
         self:PostSetupDataTables()
@@ -243,22 +235,6 @@ end
 
 function VWEP:OnIronSightsChanged(name, old, new)
     -- Override this function to do something when the iron sights state changes
-end
-
-function VWEP:OnReloadingChanged(name, old, new)
-    -- Override this function to do something when the reloading state changes
-end
-
-function VWEP:OnNextIdleChanged(name, old, new)
-    -- Override this function to do something when the next idle time changes
-end
-
-function VWEP:OnFireModeChanged(name, old, new)
-    -- Override this function to do something when the fire mode changes
-end
-
-function VWEP:OnBurstCountChanged(name, old, new)
-    -- Override this function to do something when the burst count changes
 end
 
 function VWEP:Initialize()
