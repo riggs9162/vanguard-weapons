@@ -75,14 +75,14 @@ VWEP.IronSightsEnterSound = Sound("weapons/zoom.wav") -- Iron sights enter sound
 VWEP.IronSightsEnterSoundLevel = 60 -- Iron sights enter sound level, used for sound distance
 VWEP.IronSightsEnterSoundPitch = 100 -- Iron sights enter sound pitch
 VWEP.IronSightsEnterSoundVolume = 1 -- Iron sights enter sound volume
-VWEP.IronSightsEnterSoundChannel = CHAN_WEAPON -- Iron sights enter sound channel
+VWEP.IronSightsEnterSoundChannel = CHAN_ITEM -- Iron sights enter sound channel
 
 -- Iron sights exit sound settings
 VWEP.IronSightsExitSound = Sound("weapons/zoom.wav") -- Iron sights exit sound
 VWEP.IronSightsExitSoundLevel = 60 -- Iron sights exit sound level, used for sound distance
 VWEP.IronSightsExitSoundPitch = 100 -- Iron sights exit sound pitch
 VWEP.IronSightsExitSoundVolume = 1 -- Iron sights exit sound volume
-VWEP.IronSightsExitSoundChannel = CHAN_WEAPON -- Iron sights exit sound channel
+VWEP.IronSightsExitSoundChannel = CHAN_ITEM -- Iron sights exit sound channel
 
 -- Reloading settings
 VWEP.Reloading = {}
@@ -110,7 +110,7 @@ VWEP.Cycling.Sound = Sound("Weapon_Pistol.Reload") -- The cycling sound
 VWEP.Cycling.SoundLevel = 60 -- The cycling sound level, used for sound distance
 VWEP.Cycling.SoundPitch = 100 -- The cycling sound pitch
 VWEP.Cycling.SoundVolume = 1 -- The cycling sound volume
-VWEP.Cycling.SoundChannel = CHAN_WEAPON -- The cycling sound channel
+VWEP.Cycling.SoundChannel = CHAN_ITEM -- The cycling sound channel
 VWEP.Cycling.Delay = 0.5 -- The delay between cycling
 VWEP.Cycling.Automatic = false -- Is the cycling automatic?
 
@@ -124,7 +124,7 @@ VWEP.PumpAction.Sound = Sound("Weapon_Shotgun.Special1") -- The pump action soun
 VWEP.PumpAction.SoundLevel = 60 -- The pump action sound level, used for sound distance
 VWEP.PumpAction.SoundPitch = 100 -- The pump action sound pitch
 VWEP.PumpAction.SoundVolume = 1 -- The pump action sound volume
-VWEP.PumpAction.SoundChannel = CHAN_WEAPON -- The pump action sound channel
+VWEP.PumpAction.SoundChannel = CHAN_ITEM -- The pump action sound channel
 
 -- Viewmodel settings
 VWEP.ViewModel = "models/weapons/c_pistol.mdl" -- The model used in first-person view
@@ -180,7 +180,7 @@ VWEP.FireModes.Sound = Sound("buttons/lever7.wav") -- The fire mode switch sound
 VWEP.FireModes.SoundLevel = 60 -- The fire mode switch sound level, used for sound distance
 VWEP.FireModes.SoundPitch = 140 -- The fire mode switch sound pitch
 VWEP.FireModes.SoundVolume = 1 -- The fire mode switch sound volume
-VWEP.FireModes.SoundChannel = CHAN_WEAPON -- The fire mode switch sound channel
+VWEP.FireModes.SoundChannel = CHAN_ITEM -- The fire mode switch sound channel
 VWEP.FireModes.SoundDelay = 0.5 -- The fire mode switch sound delay
 VWEP.FireModes.Delay = 0.5 -- The fire mode switch delay
 VWEP.FireModes.List = {"auto", "burst", "single"}
@@ -212,12 +212,12 @@ function VWEP:SetupDataTables()
             if ( new ) then
                 local sound = self.IronSightsEnterSound
                 if ( sound ) then
-                    self:EmitSound(sound, self.IronSightsEnterSoundLevel or 60, self.IronSightsEnterSoundPitch or 100, self.IronSightsEnterSoundVolume or 1, self.IronSightsEnterSoundChannel or CHAN_WEAPON)
+                    self:EmitSound(sound, self.IronSightsEnterSoundLevel or 60, self.IronSightsEnterSoundPitch or 100, self.IronSightsEnterSoundVolume or 1, self.IronSightsEnterSoundChannel or CHAN_ITEM)
                 end
             else
                 local sound = self.IronSightsExitSound
                 if ( sound ) then
-                    self:EmitSound(sound, self.IronSightsExitSoundLevel or 60, self.IronSightsExitSoundPitch or 100, self.IronSightsExitSoundVolume or 1, self.IronSightsExitSoundChannel or CHAN_WEAPON)
+                    self:EmitSound(sound, self.IronSightsExitSoundLevel or 60, self.IronSightsExitSoundPitch or 100, self.IronSightsExitSoundVolume or 1, self.IronSightsExitSoundChannel or CHAN_ITEM)
                 end
             end
         end
