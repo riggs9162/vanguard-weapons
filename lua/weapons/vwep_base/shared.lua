@@ -283,11 +283,14 @@ function VWEP:SetupDataTables()
         self:SetWalkingWait(0)
     end)
 
+    self:NetworkVar("Bool", 4, "Cycling")
+
     self:NetworkVar("Float", 0, "NextIdle")
     self:NetworkVar("Int", 0, "FireMode")
     self:NetworkVar("Int", 1, "BurstCount")
     self:NetworkVar("Float", 1, "WalkingWait")
     self:NetworkVar("Float", 2, "RunningWait")
+    self:NetworkVar("Float", 3, "CyclingWait")
 
     if ( self.PostSetupDataTables ) then
         self:PostSetupDataTables()
@@ -509,6 +512,7 @@ function VWEP:Think()
     self:ThinkRunning()
     self:ThinkIronSights()
     self:ThinkFireModes()
+    self:ThinkCycling()
 end
 
 function VWEP:Deploy()
