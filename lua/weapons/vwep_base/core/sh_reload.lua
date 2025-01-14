@@ -84,6 +84,7 @@ function VWEP:Reload()
                         end
 
                         self:SetReloading(false)
+                        self:SetRunningWait(0)
 
                         if ( self.PostReloadFinish ) then
                             self:PostReloadFinish()
@@ -145,6 +146,7 @@ function VWEP:Reload()
                         end
 
                         self:SetReloading(false)
+                        self:SetRunningWait(0)
 
                         if ( self.PostReloadFinish ) then
                             self:PostReloadFinish()
@@ -186,6 +188,7 @@ function VWEP:Reload()
             local ammoToTake = math.min(ammo, ply:GetAmmoCount(self.Primary.Ammo))
             ply:RemoveAmmo(ammoToTake, self.Primary.Ammo)
             self:SetClip1(self:Clip1() + ammoToTake)
+            self:SetRunningWait(0)
 
             if ( self.PostReloadFinish ) then
                 self:PostReloadFinish()

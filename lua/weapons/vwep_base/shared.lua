@@ -161,6 +161,27 @@ VWEP.WorldModelColor = Color(255, 255, 255, 255) -- Worldmodel color
 VWEP.WorldModelRenderMode = RENDERMODE_NORMAL -- Worldmodel render mode
 VWEP.WorldModelRenderFX = kRenderFxNone -- Worldmodel render fx
 
+-- Running animation settings
+VWEP.Running = {}
+VWEP.Running.Enabled = false -- Enable running animations
+VWEP.Running.PlaybackRate = 1 -- The playback rate of the running animations
+VWEP.Running.SequenceEnter = "run_enter" -- The running enter animation
+VWEP.Running.SequenceLoop = "run" -- The running loop animation
+VWEP.Running.SequenceExit = "run_exit" -- The running exit animation
+VWEP.Running.SequenceEmptyEnter = "run_empty_enter" -- The running enter animation when empty
+VWEP.Running.SequenceEmptyLoop = "run_empty" -- The running loop animation when empty
+VWEP.Running.SequenceEmptyExit = "run_empty_exit" -- The running exit animation when empty
+
+-- HL2 Pistol Example
+-- VWEP.Running.Enabled = true -- Enable running animations
+-- VWEP.Running.PlaybackRate = 1 -- The playback rate of the running animations
+-- VWEP.Running.SequenceEnter = "idletolow" -- The running enter animation
+-- VWEP.Running.SequenceLoop = "lowidle" -- The running loop animation
+-- VWEP.Running.SequenceExit = "lowtoidle" -- The running exit animation
+-- VWEP.Running.SequenceEmptyEnter = "idletolow" -- The running enter animation when empty
+-- VWEP.Running.SequenceEmptyLoop = "lowidle" -- The running loop animation when empty
+-- VWEP.Running.SequenceEmptyExit = "lowtoidle" -- The running exit animation when empty
+
 -- Weapon effects
 VWEP.Effects = {}
 VWEP.Effects.MuzzleFlash = true -- Enable muzzle flash
@@ -224,9 +245,11 @@ function VWEP:SetupDataTables()
     end)
 
     self:NetworkVar("Bool", 1, "Reloading")
+    self:NetworkVar("Bool", 2, "Running")
     self:NetworkVar("Float", 0, "NextIdle")
     self:NetworkVar("Int", 0, "FireMode")
     self:NetworkVar("Int", 1, "BurstCount")
+    self:NetworkVar("Float", 1, "RunningWait")
 
     if ( self.PostSetupDataTables ) then
         self:PostSetupDataTables()
@@ -246,6 +269,8 @@ function VWEP:Initialize()
     self:SetIronSights(false)
 
     self:SetFireMode(1)
+    self:SetRunning(false)
+    self:SetRunningWait(0)
 
     if ( self.PostInitialize ) then
         self:PostInitialize()
@@ -290,11 +315,35 @@ function VWEP:ThinkIdle()
     end
 end
 
+function VWEP:ThinkRunning()
+    if ( CLIENT or !self.Running.Enabled or self:GetReloading() ) then return end
+
+    local ply = self:GetOwner()
+    if ( !IsValid(ply) ) then return end
+
+    local running = ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
+    if ( running and !self:GetRunning() ) then
+        self:SetRunning(true)
+
+        local _, duration = self:PlayAnimation(self.Running.SequenceEnter, self.Running.PlaybackRate)
+        self:SetRunningWait(CurTime() + duration)
+    elseif ( !running and self:GetRunning() ) then
+        self:SetRunning(false)
+
+        local _, duration = self:PlayAnimation(self.Running.SequenceExit, self.Running.PlaybackRate)
+        self:SetRunningWait(CurTime() + duration)
+    elseif ( running and self:GetRunning() and CurTime() > self:GetRunningWait() ) then
+        local _, duration = self:PlayAnimation(self.Running.SequenceLoop, self.Running.PlaybackRate)
+        self:SetRunningWait(CurTime() + duration)
+    end
+end
+
 function VWEP:Think()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
 
     self:ThinkIdle()
+    self:ThinkRunning()
     self:ThinkIronSights()
     self:ThinkFireModes()
 end
