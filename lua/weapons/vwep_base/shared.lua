@@ -50,6 +50,9 @@ VWEP.Primary.SequenceIronSights = ACT_VM_PRIMARYATTACK -- The shoot animation wh
 VWEP.Primary.PlaybackRate = 1 -- The playback rate of the shoot animation
 VWEP.Primary.BurstCount = 0 -- Number of shots per burst, 0 for no burst
 VWEP.Primary.BurstDelay = 0.2 -- Delay between waves of a burst
+VWEP.Primary.CanMove = true -- Can the player shoot while moving?
+VWEP.Primary.CanMoveRun = true -- Can the player shoot while running?
+VWEP.Primary.RunSpeed = 0.75 -- Check if the player is marked as running at this speed percentange
 
 -- Primary sound settings
 VWEP.Primary.Sound = Sound("Weapon_Pistol.Single") -- Primary fire
@@ -67,7 +70,7 @@ VWEP.IronSightsFOV = 0.75 -- Iron sights field of view
 VWEP.IronSightsSensitivity = 0.5 -- Iron sights sensitivity
 VWEP.IronSightsCanMove = true -- Can the player iron sight while moving?
 VWEP.IronSightsCanMoveRun = false -- Can the player iron sight while running?
-VWEP.IronSightsRunSpeed = 0.75 -- Check if the player is marked as running at this speed
+VWEP.IronSightsRunSpeed = 0.75 -- Check if the player is marked as running at this speed percentange
 VWEP.IronSightsToggle = false -- Is the iron sight a toggle mechanism, mark as false if it's a hold mechanism
 
 -- Iron sights enter sound settings
@@ -263,6 +266,8 @@ function VWEP:SetupDataTables()
                 end
             end
         end
+
+        self:QueueIdle(0)
     end)
 
     self:NetworkVar("Bool", 1, "Reloading")
@@ -338,7 +343,13 @@ function VWEP:ThinkIdle()
         local clip = self:Clip1()
         local animIdle = self.IdleAnim or ACT_VM_IDLE
         local animEmpty = self.EmptyAnim or ACT_VM_IDLE_EMPTY
+        local animIdleIronSights = self.IdleAnimIronSights or ACT_VM_IDLE
+        local animEmptyIronSights = self.EmptyAnimIronSights or ACT_VM_IDLE_EMPTY
         local anim = clip > 0 and animIdle or animEmpty
+        if ( self:GetIronSights() ) then
+            anim = clip > 0 and animIdleIronSights or animEmptyIronSights
+        end
+
         self:PlayAnimation(anim)
     end
 end

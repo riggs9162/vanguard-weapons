@@ -1,6 +1,20 @@
 function VWEP:CanPrimaryAttack()
     if ( self:GetReloading() ) then return false end
 
+    if ( self.Primary.CanMove ) then
+        local ply = self:GetOwner()
+        if ( !IsValid(ply) ) then return false end
+
+        local runSpeed = ply:GetRunSpeed()
+        local vel = ply:GetVelocity():Length2D() / runSpeed
+        vel = math.Round(vel, 2)
+        vel = math.Clamp(vel, 0, 1)
+
+        if ( vel > self.Primary.RunSpeed ) then
+            return self.Primary.CanMoveRun and true or false
+        end
+    end
+
     return self:GetNextPrimaryFire() <= CurTime()
 end
 
