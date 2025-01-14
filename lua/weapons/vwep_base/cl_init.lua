@@ -1,4 +1,5 @@
 VWEP = SWEP
+
 vanguard.util:Include("shared.lua")
 
 local lerpFOV
