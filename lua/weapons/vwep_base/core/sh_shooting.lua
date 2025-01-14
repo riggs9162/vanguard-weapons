@@ -47,8 +47,8 @@ function VWEP:ShootEffects()
     self:QueueIdle()
 
     if ( CLIENT and IsFirstTimePredicted() ) then
-        local ent = self:GetOwner():GetViewModel()
-        if ( self:GetOwner():ShouldDrawLocalPlayer() ) then
+        local ent = ply:GetViewModel()
+        if ( ply:ShouldDrawLocalPlayer() ) then
             ent = self:GetWorldModelEntity()
         end
 
@@ -65,7 +65,7 @@ function VWEP:ShootEffects()
 
     ply:SetAnimation(PLAYER_ATTACK1)
 
-    if ( self.PumpAction.Enabled ) then
+    if ( CLIENT and self.PumpAction.Enabled ) then
         timer.Simple(duration, function()
             if ( !IsValid(self) ) then return end
 
@@ -112,7 +112,7 @@ function VWEP:Shoot()
     self:TakePrimaryAmmo(1)
 
     local ply = self:GetOwner()
-    if ( IsValid(ply) ) then
+    if ( CLIENT and IsValid(ply) ) then
         local recoilAngle = Angle(-1, math.Rand(-1, 1), 0)
 
         if ( self:GetIronSights() ) then
@@ -121,7 +121,7 @@ function VWEP:Shoot()
             recoilAngle = recoilAngle * self.Primary.Recoil
         end
 
-        if ( IsFirstTimePredicted() and ( CLIENT or game.SinglePlayer() ) ) then
+        if ( IsFirstTimePredicted() or game.SinglePlayer() ) then
             ply:SetEyeAngles(ply:EyeAngles() + recoilAngle * 0.75)
         end
 

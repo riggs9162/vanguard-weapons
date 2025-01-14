@@ -31,15 +31,13 @@ function VWEP:Reload()
 
             if ( CLIENT ) then
                 ply:SetAnimation(PLAYER_RELOAD)
-            end
 
-            timer.Create("VWEP.Cycling.Animation." .. self:EntIndex(), delayAnimation, 0, function()
-                if ( !IsValid(self) ) then return end
+                timer.Create("VWEP.Cycling.Animation." .. self:EntIndex(), delayAnimation, 0, function()
+                    if ( !IsValid(self) ) then return end
 
-                if ( CLIENT ) then
                     ply:SetAnimation(PLAYER_RELOAD)
-                end
-            end)
+                end)
+            end
 
             timer.Create("VWEP.Cycling." .. self:EntIndex(), self.Cycling.Delay, 0, function()
                 if ( !IsValid(self) ) then return end
@@ -59,8 +57,10 @@ function VWEP:Reload()
                         self:SetNextSecondaryFire(CurTime() + duration)
                     end)
 
-                    local cycleSound, cycleSoundLevel, cycleSoundPitch, cycleSoundVolume, cycleSoundChannel = self.Cycling.Sound, self.Cycling.SoundLevel, self.Cycling.SoundPitch, self.Cycling.SoundVolume, self.Cycling.SoundChannel
-                    self:EmitSound(cycleSound, cycleSoundLevel or 60, cycleSoundPitch or 100, cycleSoundVolume or 1, cycleSoundChannel or CHAN_WEAPON)
+                    if ( CLIENT ) then
+                        local cycleSound, cycleSoundLevel, cycleSoundPitch, cycleSoundVolume, cycleSoundChannel = self.Cycling.Sound, self.Cycling.SoundLevel, self.Cycling.SoundPitch, self.Cycling.SoundVolume, self.Cycling.SoundChannel
+                        self:EmitSound(cycleSound, cycleSoundLevel or 60, cycleSoundPitch or 100, cycleSoundVolume or 1, cycleSoundChannel or CHAN_ITEM)
+                    end
 
                     ply:RemoveAmmo(1, self.Primary.Ammo)
                     self:SetClip1(self:Clip1() + 1)
@@ -123,8 +123,10 @@ function VWEP:Reload()
                 self:SetNextPrimaryFire(CurTime() + duration)
                 self:SetNextSecondaryFire(CurTime() + duration)
 
-                local cycleSound, cycleSoundLevel, cycleSoundPitch, cycleSoundVolume, cycleSoundChannel = self.Cycling.Sound, self.Cycling.SoundLevel, self.Cycling.SoundPitch, self.Cycling.SoundVolume, self.Cycling.SoundChannel
-                self:EmitSound(cycleSound, cycleSoundLevel or 60, cycleSoundPitch or 100, cycleSoundVolume or 1, cycleSoundChannel or CHAN_WEAPON)
+                if ( CLIENT ) then
+                    local cycleSound, cycleSoundLevel, cycleSoundPitch, cycleSoundVolume, cycleSoundChannel = self.Cycling.Sound, self.Cycling.SoundLevel, self.Cycling.SoundPitch, self.Cycling.SoundVolume, self.Cycling.SoundChannel
+                    self:EmitSound(cycleSound, cycleSoundLevel or 60, cycleSoundPitch or 100, cycleSoundVolume or 1, cycleSoundChannel or CHAN_ITEM)
+                end
 
                 timer.Simple(duration, function()
                     if ( !IsValid(self) ) then return end
@@ -164,10 +166,12 @@ function VWEP:Reload()
 
         self:SetNextPrimaryFire(CurTime() + duration)
 
-        ply:SetAnimation(PLAYER_RELOAD)
+        if ( CLIENT ) then
+            ply:SetAnimation(PLAYER_RELOAD)
 
-        local reloadSound, reloadSoundLevel, reloadSoundPitch, reloadSoundVolume, reloadSoundChannel = self.Reloading.Sound, self.Reloading.SoundLevel, self.Reloading.SoundPitch, self.Reloading.SoundVolume, self.Reloading.SoundChannel
-        self:EmitSound(reloadSound, reloadSoundLevel or 60, reloadSoundPitch or 100, reloadSoundVolume or 1, reloadSoundChannel or CHAN_WEAPON)
+            local reloadSound, reloadSoundLevel, reloadSoundPitch, reloadSoundVolume, reloadSoundChannel = self.Reloading.Sound, self.Reloading.SoundLevel, self.Reloading.SoundPitch, self.Reloading.SoundVolume, self.Reloading.SoundChannel
+            self:EmitSound(reloadSound, reloadSoundLevel or 60, reloadSoundPitch or 100, reloadSoundVolume or 1, reloadSoundChannel or CHAN_ITEM)
+        end
 
         timer.Simple(duration, function()
             if ( !IsValid(self) ) then return end
