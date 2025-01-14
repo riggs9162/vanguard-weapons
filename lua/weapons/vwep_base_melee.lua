@@ -48,6 +48,9 @@ SWEP.Primary.SequenceHit = ACT_VM_HITCENTER -- The hit animation, optional
 SWEP.Primary.PlaybackRate = 1 -- The playback rate of the swing animation
 SWEP.Primary.Range = 64 -- The range of the weapon
 SWEP.Primary.HullSize = 1 -- The hull size of the weapon
+SWEP.Primary.CanMove = true -- Can the player shoot while moving?
+SWEP.Primary.CanMoveRun = true -- Can the player shoot while running?
+SWEP.Primary.RunSpeed = 0.75 -- Check if the player is marked as running at this speed percentange
 
 -- Primary sound settings
 SWEP.Primary.Sound = Sound("Weapon_Pistol.Single") -- Primary fire
@@ -314,6 +317,20 @@ end
 function SWEP:CanPrimaryAttack()
     if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
 
+    if ( self.Primary.CanMove ) then
+        local ply = self:GetOwner()
+        if ( !IsValid(ply) ) then return false end
+
+        local runSpeed = ply:GetRunSpeed()
+        local vel = ply:GetVelocity():Length2D() / runSpeed
+        vel = math.Round(vel, 2)
+        vel = math.Clamp(vel, 0, 1)
+
+        if ( vel > self.Primary.RunSpeed ) then
+            return self.Primary.CanMoveRun and true or false
+        end
+    end
+
     if ( self.CanPrimaryAttackOverride ) then
         local ply = self:GetOwner()
         if ( !IsValid(ply) ) then return false end
@@ -354,9 +371,91 @@ function SWEP:ThinkIdle()
     end
 end
 
+function VWEP:ThinkWalking()
+    if ( CLIENT or !self.Walking or !self.Walking.Enabled ) then return end
+
+    local ply = self:GetOwner()
+    if ( !IsValid(ply) ) then return end
+
+    local sequenceEnter = self.Walking.SequenceEnter
+    local sequenceLoop = self.Walking.SequenceLoop
+    local sequenceExit = self.Walking.SequenceExit
+
+    local walking = !ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
+    if ( walking and !self:GetWalking() ) then
+        self:SetWalking(true)
+
+        if ( sequenceEnter ) then
+            local _, duration = self:PlayAnimation(sequenceEnter, self.Walking.PlaybackRate)
+            self:QueueIdle(duration)
+            self:SetWalkingWait(CurTime() + duration)
+        else
+            self:QueueIdle(0)
+            self:SetWalkingWait(0)
+        end
+    elseif ( !walking and self:GetWalking() ) then
+        self:SetWalking(false)
+
+        if ( sequenceExit ) then
+            local _, duration = self:PlayAnimation(sequenceExit, self.Walking.PlaybackRate)
+            self:QueueIdle(duration)
+            self:SetWalkingWait(CurTime() + duration)
+        else
+            self:QueueIdle(0)
+            self:SetWalkingWait(0)
+        end
+    elseif ( walking and self:GetWalking() and sequenceLoop and CurTime() > self:GetWalkingWait() ) then
+        local _, duration = self:PlayAnimation(sequenceLoop, self.Walking.PlaybackRate)
+        self:QueueIdle()
+        self:SetWalkingWait(CurTime() + duration)
+    end
+end
+
+function VWEP:ThinkRunning()
+    if ( CLIENT or !self.Running or !self.Running.Enabled ) then return end
+
+    local ply = self:GetOwner()
+    if ( !IsValid(ply) ) then return end
+
+    local sequenceEnter = self.Running.SequenceEnter
+    local sequenceLoop = self.Running.SequenceLoop
+    local sequenceExit = self.Running.SequenceExit
+
+    local running = ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
+    if ( running and !self:GetRunning() ) then
+        self:SetRunning(true)
+
+        if ( sequenceEnter ) then
+            local _, duration = self:PlayAnimation(sequenceEnter, self.Running.PlaybackRate)
+            self:QueueIdle(duration)
+            self:SetRunningWait(CurTime() + duration)
+        else
+            self:QueueIdle(0)
+            self:SetRunningWait(0)
+        end
+    elseif ( !running and self:GetRunning() ) then
+        self:SetRunning(false)
+
+        if ( sequenceExit ) then
+            local _, duration = self:PlayAnimation(sequenceExit, self.Running.PlaybackRate)
+            self:QueueIdle(duration)
+            self:SetRunningWait(CurTime() + duration)
+        else
+            self:QueueIdle(0)
+            self:SetRunningWait(0)
+        end
+    elseif ( running and self:GetRunning() and sequenceLoop and CurTime() > self:GetRunningWait() ) then
+        local _, duration = self:PlayAnimation(sequenceLoop, self.Running.PlaybackRate)
+        self:QueueIdle()
+        self:SetRunningWait(CurTime() + duration)
+    end
+end
+
 function SWEP:Think()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
 
     self:ThinkIdle()
+    self:ThinkWalking()
+    self:ThinkRunning()
 end

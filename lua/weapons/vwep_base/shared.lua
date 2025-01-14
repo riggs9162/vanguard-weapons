@@ -272,7 +272,17 @@ function VWEP:SetupDataTables()
 
     self:NetworkVar("Bool", 1, "Reloading")
     self:NetworkVar("Bool", 2, "Walking")
+    self:NetworkVarNotify("Walking", function(name, old, new)
+        self:QueueIdle(0)
+        self:SetRunningWait(0)
+    end)
+
     self:NetworkVar("Bool", 3, "Running")
+    self:NetworkVarNotify("Running", function(name, old, new)
+        self:QueueIdle(0)
+        self:SetWalkingWait(0)
+    end)
+
     self:NetworkVar("Float", 0, "NextIdle")
     self:NetworkVar("Int", 0, "FireMode")
     self:NetworkVar("Int", 1, "BurstCount")
@@ -294,8 +304,6 @@ function VWEP:Initialize()
     end
 
     self:SetWeaponHoldType(self.HoldType)
-    self:SetIronSights(false)
-
     self:SetFireMode(1)
     self:SetRunning(false)
     self:SetRunningWait(0)
@@ -394,22 +402,17 @@ function VWEP:ThinkWalking()
     end
 
     local walking = !ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
-    if ( walking and !self:GetWalking() and sequenceEnter ) then
+    if ( walking and !self:GetWalking() ) then
         self:SetWalking(true)
 
-        local _, duration = self:PlayAnimation(sequenceEnter, self.Walking.PlaybackRate)
-        self:QueueIdle(duration)
-        self:SetWalkingWait(CurTime() + duration)
-    elseif ( !walking and self:GetWalking() and sequenceExit ) then
-        self:SetWalking(false)
-
-        local _, duration = self:PlayAnimation(sequenceExit, self.Walking.PlaybackRate)
-        self:QueueIdle(duration)
-        self:SetWalkingWait(CurTime() + duration)
-    elseif ( walking and self:GetWalking() and sequenceLoop and CurTime() > self:GetWalkingWait() ) then
-        local _, duration = self:PlayAnimation(sequenceLoop, self.Walking.PlaybackRate)
-        self:QueueIdle()
-        self:SetWalkingWait(CurTime() + duration)
+        if ( sequenceEnter ) then
+            local _, duration = self:PlayAnimation(sequenceEnter, self.Walking.PlaybackRate)
+            self:QueueIdle(duration)
+            self:SetWalkingWait(CurTime() + duration)
+        else
+            self:QueueIdle(0)
+            self:SetWalkingWait(0)
+        end
     elseif ( !walking and self:GetWalking() ) then
         self:SetWalking(false)
 
@@ -421,6 +424,10 @@ function VWEP:ThinkWalking()
             self:QueueIdle(0)
             self:SetWalkingWait(0)
         end
+    elseif ( walking and self:GetWalking() and sequenceLoop and CurTime() > self:GetWalkingWait() ) then
+        local _, duration = self:PlayAnimation(sequenceLoop, self.Walking.PlaybackRate)
+        self:QueueIdle()
+        self:SetWalkingWait(CurTime() + duration)
     end
 end
 
@@ -430,22 +437,65 @@ function VWEP:ThinkRunning()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
 
+    local clip = self:Clip1()
+    local empty = clip <= 0
+    local sequenceEnterEmpty = self.Running.SequenceEmptyEnter
+    local sequenceLoopEmpty = self.Running.SequenceEmptyLoop
+    local sequenceExitEmpty = self.Running.SequenceEmptyExit
+    local sequenceEnter = self.Running.SequenceEnter
+    local sequenceLoop = self.Running.SequenceLoop
+    local sequenceExit = self.Running.SequenceExit
+
+    if ( empty and sequenceEnterEmpty and !sequenceLoopEmpty ) then
+        sequenceLoopEmpty = sequenceEnterEmpty
+    end
+
+    if ( empty and sequenceLoopEmpty and !sequenceEnterEmpty ) then
+        sequenceEnterEmpty = sequenceLoopEmpty
+    end
+
+    if ( empty and sequenceExitEmpty and !sequenceEnterEmpty ) then
+        sequenceEnterEmpty = sequenceExitEmpty
+    end
+
+    if ( empty and sequenceExitEmpty and !sequenceLoopEmpty ) then
+        sequenceLoopEmpty = sequenceExitEmpty
+    end
+
+    if ( !empty and sequenceEnter and !sequenceLoop ) then
+        sequenceLoop = sequenceEnter
+    end
+
+    if ( !empty and sequenceLoop and !sequenceEnter ) then
+        sequenceEnter = sequenceLoop
+    end
+
     local running = ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
-    if ( running and !self:GetRunning() and self.Running.SequenceEnter ) then
+    if ( running and !self:GetRunning() ) then
         self:SetRunning(true)
 
-        local _, duration = self:PlayAnimation(self.Running.SequenceEnter, self.Running.PlaybackRate)
-        self:QueueIdle(duration)
-        self:SetRunningWait(CurTime() + duration)
-    elseif ( !running and self:GetRunning() and self.Running.SequenceExit ) then
+        if ( sequenceEnter ) then
+            local _, duration = self:PlayAnimation(sequenceEnter, self.Running.PlaybackRate)
+            self:QueueIdle(duration)
+            self:SetRunningWait(CurTime() + duration)
+        else
+            self:QueueIdle(0)
+            self:SetRunningWait(0)
+        end
+    elseif ( !running and self:GetRunning() ) then
         self:SetRunning(false)
 
-        local _, duration = self:PlayAnimation(self.Running.SequenceExit, self.Running.PlaybackRate)
-        self:QueueIdle(duration)
-        self:SetRunningWait(CurTime() + duration)
-    elseif ( running and self:GetRunning() and self.Running.SequenceLoop and CurTime() > self:GetRunningWait() ) then
-        local _, duration = self:PlayAnimation(self.Running.SequenceLoop, self.Running.PlaybackRate)
-        self:QueueIdle(duration)
+        if ( sequenceExit ) then
+            local _, duration = self:PlayAnimation(sequenceExit, self.Running.PlaybackRate)
+            self:QueueIdle(duration)
+            self:SetRunningWait(CurTime() + duration)
+        else
+            self:QueueIdle(0)
+            self:SetRunningWait(0)
+        end
+    elseif ( running and self:GetRunning() and sequenceLoop and CurTime() > self:GetRunningWait() ) then
+        local _, duration = self:PlayAnimation(sequenceLoop, self.Running.PlaybackRate)
+        self:QueueIdle()
         self:SetRunningWait(CurTime() + duration)
     end
 end
