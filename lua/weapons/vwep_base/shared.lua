@@ -161,16 +161,37 @@ VWEP.WorldModelColor = Color(255, 255, 255, 255) -- Worldmodel color
 VWEP.WorldModelRenderMode = RENDERMODE_NORMAL -- Worldmodel render mode
 VWEP.WorldModelRenderFX = kRenderFxNone -- Worldmodel render fx
 
+-- Walking animation settings
+-- VWEP.Walking = {}
+-- VWEP.Walking.Enabled = false -- Enable walking animations
+-- VWEP.Walking.PlaybackRate = 1 -- The playback rate of the walking animations
+-- VWEP.Walking.SequenceEnter = "walk_enter" -- The walking enter animation
+-- VWEP.Walking.SequenceLoop = "walk" -- The walking loop animation
+-- VWEP.Walking.SequenceExit = "walk_exit" -- The walking exit animation
+-- VWEP.Walking.SequenceEmptyEnter = "walk_empty_enter" -- The walking enter animation when empty
+-- VWEP.Walking.SequenceEmptyLoop = "walk_empty" -- The walking loop animation when empty
+-- VWEP.Walking.SequenceEmptyExit = "walk_empty_exit" -- The walking exit animation when empty
+
+-- HL2 Pistol Example
+-- VWEP.Walking.Enabled = true -- Enable walking animations
+-- VWEP.Walking.PlaybackRate = 1 -- The playback rate of the walking animations
+-- VWEP.Walking.SequenceEnter = "idletolow" -- The walking enter animation
+-- VWEP.Walking.SequenceLoop = "lowidle" -- The walking loop animation
+-- VWEP.Walking.SequenceExit = "lowtoidle" -- The walking exit animation
+-- VWEP.Walking.SequenceEmptyEnter = "idletolow" -- The walking enter animation when empty
+-- VWEP.Walking.SequenceEmptyLoop = "lowidle" -- The walking loop animation when empty
+-- VWEP.Walking.SequenceEmptyExit = "lowtoidle" -- The walking exit animation when empty
+
 -- Running animation settings
-VWEP.Running = {}
-VWEP.Running.Enabled = false -- Enable running animations
-VWEP.Running.PlaybackRate = 1 -- The playback rate of the running animations
-VWEP.Running.SequenceEnter = "run_enter" -- The running enter animation
-VWEP.Running.SequenceLoop = "run" -- The running loop animation
-VWEP.Running.SequenceExit = "run_exit" -- The running exit animation
-VWEP.Running.SequenceEmptyEnter = "run_empty_enter" -- The running enter animation when empty
-VWEP.Running.SequenceEmptyLoop = "run_empty" -- The running loop animation when empty
-VWEP.Running.SequenceEmptyExit = "run_empty_exit" -- The running exit animation when empty
+-- VWEP.Running = {}
+-- VWEP.Running.Enabled = false -- Enable running animations
+-- VWEP.Running.PlaybackRate = 1 -- The playback rate of the running animations
+-- VWEP.Running.SequenceEnter = "run_enter" -- The running enter animation
+-- VWEP.Running.SequenceLoop = "run" -- The running loop animation
+-- VWEP.Running.SequenceExit = "run_exit" -- The running exit animation
+-- VWEP.Running.SequenceEmptyEnter = "run_empty_enter" -- The running enter animation when empty
+-- VWEP.Running.SequenceEmptyLoop = "run_empty" -- The running loop animation when empty
+-- VWEP.Running.SequenceEmptyExit = "run_empty_exit" -- The running exit animation when empty
 
 -- HL2 Pistol Example
 -- VWEP.Running.Enabled = true -- Enable running animations
@@ -245,11 +266,13 @@ function VWEP:SetupDataTables()
     end)
 
     self:NetworkVar("Bool", 1, "Reloading")
-    self:NetworkVar("Bool", 2, "Running")
+    self:NetworkVar("Bool", 2, "Walking")
+    self:NetworkVar("Bool", 3, "Running")
     self:NetworkVar("Float", 0, "NextIdle")
     self:NetworkVar("Int", 0, "FireMode")
     self:NetworkVar("Int", 1, "BurstCount")
-    self:NetworkVar("Float", 1, "RunningWait")
+    self:NetworkVar("Float", 1, "WalkingWait")
+    self:NetworkVar("Float", 2, "RunningWait")
 
     if ( self.PostSetupDataTables ) then
         self:PostSetupDataTables()
@@ -311,7 +334,82 @@ function VWEP:ThinkIdle()
 
     if ( CurTime() > self:GetNextIdle() ) then
         self:SetNextIdle(0)
-        self:PlayAnimation(self:Clip1() > 0 and ( self.IdleAnim or ACT_VM_IDLE ) or ( self.EmptyAnim or ACT_VM_IDLE_EMPTY ))
+
+        local clip = self:Clip1()
+        local animIdle = self.IdleAnim or ACT_VM_IDLE
+        local animEmpty = self.EmptyAnim or ACT_VM_IDLE_EMPTY
+        local anim = clip > 0 and animIdle or animEmpty
+        self:PlayAnimation(anim)
+    end
+end
+
+function VWEP:ThinkWalking()
+    if ( CLIENT or !self.Walking.Enabled or self:GetReloading() ) then return end
+
+    local ply = self:GetOwner()
+    if ( !IsValid(ply) ) then return end
+
+    local clip = self:Clip1()
+    local empty = clip <= 0
+    local sequenceEnterEmpty = self.Walking.SequenceEmptyEnter
+    local sequenceLoopEmpty = self.Walking.SequenceEmptyLoop
+    local sequenceExitEmpty = self.Walking.SequenceEmptyExit
+    local sequenceEnter = self.Walking.SequenceEnter
+    local sequenceLoop = self.Walking.SequenceLoop
+    local sequenceExit = self.Walking.SequenceExit
+
+    if ( empty and sequenceEnterEmpty and !sequenceLoopEmpty ) then
+        sequenceLoopEmpty = sequenceEnterEmpty
+    end
+
+    if ( empty and sequenceLoopEmpty and !sequenceEnterEmpty ) then
+        sequenceEnterEmpty = sequenceLoopEmpty
+    end
+
+    if ( empty and sequenceExitEmpty and !sequenceEnterEmpty ) then
+        sequenceEnterEmpty = sequenceExitEmpty
+    end
+
+    if ( empty and sequenceExitEmpty and !sequenceLoopEmpty ) then
+        sequenceLoopEmpty = sequenceExitEmpty
+    end
+
+    if ( !empty and sequenceEnter and !sequenceLoop ) then
+        sequenceLoop = sequenceEnter
+    end
+
+    if ( !empty and sequenceLoop and !sequenceEnter ) then
+        sequenceEnter = sequenceLoop
+    end
+
+    local walking = !ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
+    if ( walking and !self:GetWalking() and sequenceEnter ) then
+        self:SetWalking(true)
+
+        local _, duration = self:PlayAnimation(sequenceEnter, self.Walking.PlaybackRate)
+        self:QueueIdle(duration)
+        self:SetWalkingWait(CurTime() + duration)
+    elseif ( !walking and self:GetWalking() and sequenceExit ) then
+        self:SetWalking(false)
+
+        local _, duration = self:PlayAnimation(sequenceExit, self.Walking.PlaybackRate)
+        self:QueueIdle(duration)
+        self:SetWalkingWait(CurTime() + duration)
+    elseif ( walking and self:GetWalking() and sequenceLoop and CurTime() > self:GetWalkingWait() ) then
+        local _, duration = self:PlayAnimation(sequenceLoop, self.Walking.PlaybackRate)
+        self:QueueIdle()
+        self:SetWalkingWait(CurTime() + duration)
+    elseif ( !walking and self:GetWalking() ) then
+        self:SetWalking(false)
+
+        if ( sequenceExit ) then
+            local _, duration = self:PlayAnimation(sequenceExit, self.Walking.PlaybackRate)
+            self:QueueIdle(duration)
+            self:SetWalkingWait(CurTime() + duration)
+        else
+            self:QueueIdle(0)
+            self:SetWalkingWait(0)
+        end
     end
 end
 
@@ -322,18 +420,21 @@ function VWEP:ThinkRunning()
     if ( !IsValid(ply) ) then return end
 
     local running = ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
-    if ( running and !self:GetRunning() ) then
+    if ( running and !self:GetRunning() and self.Running.SequenceEnter ) then
         self:SetRunning(true)
 
         local _, duration = self:PlayAnimation(self.Running.SequenceEnter, self.Running.PlaybackRate)
+        self:QueueIdle(duration)
         self:SetRunningWait(CurTime() + duration)
-    elseif ( !running and self:GetRunning() ) then
+    elseif ( !running and self:GetRunning() and self.Running.SequenceExit ) then
         self:SetRunning(false)
 
         local _, duration = self:PlayAnimation(self.Running.SequenceExit, self.Running.PlaybackRate)
+        self:QueueIdle(duration)
         self:SetRunningWait(CurTime() + duration)
-    elseif ( running and self:GetRunning() and CurTime() > self:GetRunningWait() ) then
+    elseif ( running and self:GetRunning() and self.Running.SequenceLoop and CurTime() > self:GetRunningWait() ) then
         local _, duration = self:PlayAnimation(self.Running.SequenceLoop, self.Running.PlaybackRate)
+        self:QueueIdle(duration)
         self:SetRunningWait(CurTime() + duration)
     end
 end
@@ -343,6 +444,7 @@ function VWEP:Think()
     if ( !IsValid(ply) ) then return end
 
     self:ThinkIdle()
+    self:ThinkWalking()
     self:ThinkRunning()
     self:ThinkIronSights()
     self:ThinkFireModes()
