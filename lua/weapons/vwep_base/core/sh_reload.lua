@@ -37,6 +37,8 @@ function VWEP:DoCyclingReload()
 
         ply:RemoveAmmo(1, self.Primary.Ammo)
         self:SetClip1(self:Clip1() + 1)
+
+        ply:SetAnimation(PLAYER_RELOAD)
     else
         self:SetReloading(false)
         self:SetCycling(false)
