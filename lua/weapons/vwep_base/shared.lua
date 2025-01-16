@@ -98,6 +98,18 @@ VWEP.Reloading.SoundPitch = 100 -- The reload sound pitch
 VWEP.Reloading.SoundVolume = 1 -- The reload sound volume
 VWEP.Reloading.SoundChannel = CHAN_WEAPON -- The reload sound channel
 
+-- Reloading event settings, some weapons have custom events for reloading.
+-- This only works for the base reloading system and not for cycling.
+VWEP.Reloading.Events = {
+    -- Example
+    /*
+    {Time = 0.5, Function = function(self)
+        -- Play a sound 0.5 seconds into the reload with the level of 60, pitch of 100, volume of 1 and channel of CHAN_ITEM
+        self:EmitSound("Weapon_Pistol.ClipOut", 60, 100, 1, CHAN_ITEM)
+    end},
+    */
+}
+
 -- Cycling settings
 VWEP.Cycling = {}
 VWEP.Cycling.Enabled = false -- Enable cycling

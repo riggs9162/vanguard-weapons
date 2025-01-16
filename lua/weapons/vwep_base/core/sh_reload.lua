@@ -108,6 +108,19 @@ function VWEP:Reload()
     local _, duration = self:PlayAnimation(vmReload, clip <= 0 and self.Reloading.PlaybackRateEmpty or self.Reloading.PlaybackRate)
     self:QueueIdle()
 
+    for _, data in ipairs(self.Reloading.Events) do
+        local time = data.Time * ( clip <= 0 and self.Reloading.PlaybackRateEmpty or self.Reloading.PlaybackRate )
+        local func = data.Function
+
+        timer.Simple(time, function()
+            if ( !IsValid(self) or !IsValid(ply) ) then return end
+
+            if ( func ) then
+                func(self, ply)
+            end
+        end)
+    end
+
     self:SetNextPrimaryFire(CurTime() + duration)
 
     if ( CLIENT ) then
