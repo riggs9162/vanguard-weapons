@@ -366,7 +366,8 @@ function VWEP:ThinkIdle()
 end
 
 function VWEP:ThinkWalking()
-    if ( CLIENT or !self.Walking or !self.Walking.Enabled or self:GetCycling() or self:GetReloading() ) then return end
+    if ( CLIENT or !self.Walking or !self.Walking.Enabled ) then return end
+    if ( self:GetCycling() or self:GetReloading() ) then return end
 
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
@@ -435,7 +436,8 @@ function VWEP:ThinkWalking()
 end
 
 function VWEP:ThinkRunning()
-    if ( CLIENT or !self.Running or !self.Running.Enabled or self:GetCycling() or self:GetReloading() ) then return end
+    if ( CLIENT or !self.Running or !self.Running.Enabled ) then return end
+    if ( self:GetCycling() or self:GetReloading() ) then return end
 
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
