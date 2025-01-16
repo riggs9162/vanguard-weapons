@@ -110,12 +110,17 @@ function VWEP:Reload()
 
     if ( self.Reloading.Events ) then
         for _, data in ipairs(self.Reloading.Events) do
-            local time = data.Time * ( clip <= 0 and self.Reloading.PlaybackRateEmpty or self.Reloading.PlaybackRate )
-            local func = data.Function
+            local time = data.Time
+            local timeEmpty = data.TimeEmpty
+
+            if ( clip <= 0 and timeEmpty ) then
+                time = timeEmpty
+            end
 
             timer.Simple(time, function()
                 if ( !IsValid(self) or !IsValid(ply) ) then return end
 
+                local func = data.Function
                 if ( func ) then
                     func(self, ply)
                 end

@@ -114,7 +114,7 @@ VWEP.Reloading.SoundChannel = CHAN_WEAPON -- The reload sound channel
 /*
 VWEP.Reloading.Events = {
     -- Example
-    {Time = 0.5, Function = function(self)
+    {Time = 0.5, TimeEmpty = 0.6, Function = function(self)
         -- Play a sound 0.5 seconds into the reload with the level of 60, pitch of 100, volume of 1 and channel of CHAN_ITEM
         self:EmitSound("Weapon_Pistol.ClipOut", 60, 100, 1, CHAN_ITEM)
     end},
