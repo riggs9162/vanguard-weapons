@@ -152,6 +152,22 @@ VWEP.PumpAction.SoundPitch = 100 -- The pump action sound pitch
 VWEP.PumpAction.SoundVolume = 1 -- The pump action sound volume
 VWEP.PumpAction.SoundChannel = CHAN_ITEM -- The pump action sound channel
 
+-- Wind up settings, used for miniguns
+VWEP.Winding = {}
+VWEP.Winding.Enabled = false -- Enable wind up
+VWEP.Winding.Duration = 2 -- The time the owner has to hold the trigger to wind up
+VWEP.Winding.MaxDuration = 5 -- The maximum time the owner fire his weapon before it winds down forcefully
+VWEP.Winding.SoundUp = Sound("Weapon_Minigun.WindUp") -- The sound that plays when the minigun is winding up
+VWEP.Winding.SoundUpLevel = 60 -- The sound level of the wind up sound
+VWEP.Winding.SoundUpPitch = 100 -- The sound pitch of the wind up sound
+VWEP.Winding.SoundUpVolume = 1 -- The sound volume of the wind up sound
+VWEP.Winding.SoundUpChannel = CHAN_ITEM -- The sound channel of the wind up sound
+VWEP.Winding.SoundDown = Sound("Weapon_Minigun.WindDown") -- The sound that plays when the minigun is winding down
+VWEP.Winding.SoundDownLevel = 60 -- The sound level of the wind down sound
+VWEP.Winding.SoundDownPitch = 100 -- The sound pitch of the wind down sound
+VWEP.Winding.SoundDownVolume = 1 -- The sound volume of the wind down sound
+VWEP.Winding.SoundDownChannel = CHAN_ITEM -- The sound channel of the wind down sound
+
 -- Viewmodel settings
 VWEP.ViewModel = "models/weapons/c_pistol.mdl" -- The model used in first-person view
 VWEP.ViewModelSkin = 0 -- Viewmodel skin
@@ -294,26 +310,36 @@ function VWEP:SetupDataTables()
     end)
 
     self:NetworkVar("Bool", 1, "Reloading")
+
+    self:NetworkVar("Float", 0, "NextIdle")
+    self:NetworkVar("Int", 0, "FireMode")
+    self:NetworkVar("Int", 1, "BurstCount")
+
+    -- Walking
     self:NetworkVar("Bool", 2, "Walking")
     self:NetworkVarNotify("Walking", function(name, old, new)
         self:QueueIdle(0)
         self:SetRunningWait(0)
     end)
+    self:NetworkVar("Float", 1, "WalkingWait")
 
+    -- Running
     self:NetworkVar("Bool", 3, "Running")
     self:NetworkVarNotify("Running", function(name, old, new)
         self:QueueIdle(0)
         self:SetWalkingWait(0)
     end)
-
-    self:NetworkVar("Bool", 4, "Cycling")
-
-    self:NetworkVar("Float", 0, "NextIdle")
-    self:NetworkVar("Int", 0, "FireMode")
-    self:NetworkVar("Int", 1, "BurstCount")
-    self:NetworkVar("Float", 1, "WalkingWait")
     self:NetworkVar("Float", 2, "RunningWait")
+
+    -- Cycling
+    self:NetworkVar("Bool", 4, "Cycling")
     self:NetworkVar("Float", 3, "CyclingWait")
+
+    -- Winding
+    self:NetworkVar("Bool", 5, "Winding")
+    self:NetworkVar("Bool", 6, "WindedUp")
+    self:NetworkVar("Float", 4, "WindingWait")
+    self:NetworkVar("Float", 5, "WindingStart")
 
     if ( self.PostSetupDataTables ) then
         self:PostSetupDataTables()
@@ -528,6 +554,72 @@ function VWEP:ThinkRunning()
     end
 end
 
+function VWEP:ThinkWinding()
+    if ( !self.Winding or !self.Winding.Enabled ) then return end
+    if ( self:GetCycling() or self:GetReloading() ) then return end
+
+    local ply = self:GetOwner()
+    if ( !IsValid(ply) ) then return end
+
+    local holding = ply:KeyDown(IN_ATTACK)
+    if ( holding and !self:GetWinding() ) then
+        print("Start winding")
+        self:SetWinding(true)
+        self:SetWindingStart(CurTime())
+
+        if ( !self.WindingSoundUp ) then
+            self.WindingSoundUp = CreateSound(ply, self.Winding.SoundUp)
+            self.WindingSoundUp:SetSoundLevel(self.Winding.SoundUpLevel or 60)
+            self.WindingSoundUp:Play()
+        elseif ( self.WindingSoundUp and !self.WindingSoundUp:IsPlaying() ) then
+            self.WindingSoundUp:Play()
+        end
+    elseif ( holding and self:GetWinding() ) then
+        if ( self:GetWindingStart() and CurTime() - self:GetWindingStart() >= self.Winding.Duration ) then
+            if ( !self:GetWindedUp() ) then
+                print("Winded up")
+                self:SetWindedUp(true)
+
+                if ( self.WindingSoundUp and self.WindingSoundUp:IsPlaying() ) then
+                    self.WindingSoundUp:Stop()
+                end
+            else
+                if ( self:CanPrimaryAttack() ) then
+                    if ( self.Winding.MaxDuration and CurTime() - self:GetWindingStart() >= self.Winding.MaxDuration ) then
+                        print("Winding down forcefully")
+                        self:SetWinding(false)
+                        self:SetWindedUp(false)
+    
+                        if ( self.WindingSoundUp and self.WindingSoundUp:IsPlaying() ) then
+                            self.WindingSoundUp:Stop()
+                        end
+    
+                        if ( self.WindingSoundDown ) then
+                            self:EmitSound(self.WindingSoundDown, self.Winding.SoundDownLevel or 60, self.Winding.SoundDownPitch or 100, self.Winding.SoundDownVolume or 1, self.Winding.SoundDownChannel or CHAN_ITEM)
+                        end
+                    end
+                    print("Shooting")
+                    self:Shoot()
+                end
+            end
+        end
+    elseif ( !holding ) then
+        if ( self:GetWinding() ) then
+            print("Stop winding")
+            self:SetWinding(false)
+            self:SetWindedUp(false)
+
+            if ( self.WindingSoundUp and self.WindingSoundUp:IsPlaying() ) then
+                self.WindingSoundUp:Stop()
+            end
+
+            if ( self.WindingSoundDown ) then
+                self:EmitSound(self.WindingSoundDown, self.Winding.SoundDownLevel or 60, self.Winding.SoundDownPitch or 100, self.Winding.SoundDownVolume or 1, self.Winding.SoundDownChannel or CHAN_ITEM)
+            end
+        end
+    end
+end
+
 function VWEP:Think()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
@@ -538,6 +630,7 @@ function VWEP:Think()
     self:ThinkIronSights()
     self:ThinkFireModes()
     self:ThinkCycling()
+    self:ThinkWinding()
 end
 
 function VWEP:Deploy()

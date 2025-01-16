@@ -130,7 +130,7 @@ end
 function VWEP:Shoot()
     if ( self:Clip1() <= 0 ) then
         self:EmitSound(self.Primary.SoundEmpty, 60, 100, 1, CHAN_WEAPON)
-        self:SetNextPrimaryFire(CurTime() + 0.2)
+        self:SetNextPrimaryFire(CurTime() + 1)
         return
     end
 
@@ -155,9 +155,12 @@ function VWEP:Shoot()
 
         ply:ViewPunch(recoilAngle * 0.5)
     end
+    
+    self:SetNextPrimaryFire(self:CalculateNextPrimaryFire())
 end
 
 function VWEP:PrimaryAttack()
+    if ( self.Winding.Enabled ) then return end
     if ( !self:CanPrimaryAttack() ) then return end
 
     local prePrimaryAttack = self.PrePrimaryAttack
@@ -172,11 +175,9 @@ function VWEP:PrimaryAttack()
         else
             self:Shoot()
             self:SetBurstCount(self:GetBurstCount() + 1)
-            self:SetNextPrimaryFire(self:CalculateNextPrimaryFire())
         end
     else
         self:Shoot()
-        self:SetNextPrimaryFire(self:CalculateNextPrimaryFire())
     end
 
     if ( self.PostPrimaryAttack ) then
