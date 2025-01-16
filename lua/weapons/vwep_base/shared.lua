@@ -54,6 +54,17 @@ VWEP.Primary.CanMove = true -- Can the player shoot while moving?
 VWEP.Primary.CanMoveRun = true -- Can the player shoot while running?
 VWEP.Primary.RunSpeed = 0.75 -- Check if the player is marked as running at this speed percentange
 
+-- Primary fire event settings, this can be used to play sounds or other effects at certain times during the shoot sequence.
+/*
+VWEP.Primary.Events = {
+    -- Example
+    {Time = 0, Function = function(self)
+        -- Play a sound 0 seconds into the shoot with the level of 100, pitch of 100, volume of 1 and channel of CHAN_WEAPON
+        self:EmitSound("Weapon_Pistol.NPC_Single", 100, 100, 1, CHAN_WEAPON)
+    end},
+}
+*/
+
 -- Primary sound settings
 VWEP.Primary.Sound = Sound("Weapon_Pistol.Single") -- Primary fire
 VWEP.Primary.SoundEmpty = Sound("Weapon_Pistol.Empty") -- Primary fire when empty
@@ -100,15 +111,15 @@ VWEP.Reloading.SoundChannel = CHAN_WEAPON -- The reload sound channel
 
 -- Reloading event settings, some weapons have custom events for reloading.
 -- This only works for the base reloading system and not for cycling.
+/*
 VWEP.Reloading.Events = {
     -- Example
-    /*
     {Time = 0.5, Function = function(self)
         -- Play a sound 0.5 seconds into the reload with the level of 60, pitch of 100, volume of 1 and channel of CHAN_ITEM
         self:EmitSound("Weapon_Pistol.ClipOut", 60, 100, 1, CHAN_ITEM)
     end},
-    */
 }
+*/
 
 -- Cycling settings
 VWEP.Cycling = {}

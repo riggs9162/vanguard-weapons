@@ -77,6 +77,31 @@ function VWEP:ShootEffects()
         end
     end
 
+    if ( self.Primary.Shell ) then
+        local effectData = EffectData()
+        effectData:SetEntity(ply)
+        effectData:SetAttachment(ply:LookupAttachment("shell"))
+        effectData:SetScale(self.Primary.ShellScale or 1)
+        effectData:SetFlags(self.Primary.ShellFlags or 1)
+
+        util.Effect(self.Primary.Shell, effectData)
+    end
+
+    if ( self.Primary.Events ) then
+        for _, data in ipairs(self.Primary.Events) do
+            local time = data.Time
+            local func = data.Function
+
+            timer.Simple(time, function()
+                if ( !IsValid(self) or !IsValid(ply) ) then return end
+
+                if ( func ) then
+                    func(self, ply)
+                end
+            end)
+        end
+    end
+
     ply:SetAnimation(PLAYER_ATTACK1)
 
     if ( self.PumpAction.Enabled ) then

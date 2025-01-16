@@ -108,7 +108,7 @@ function VWEP:Reload()
     local _, duration = self:PlayAnimation(vmReload, clip <= 0 and self.Reloading.PlaybackRateEmpty or self.Reloading.PlaybackRate)
     self:QueueIdle()
 
-    for _, data in ipairs(self.Reloading.Events) do
+    for _, data in ipairs(self.Reloading.Events or {}) do
         local time = data.Time * ( clip <= 0 and self.Reloading.PlaybackRateEmpty or self.Reloading.PlaybackRate )
         local func = data.Function
 
