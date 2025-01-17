@@ -1,5 +1,11 @@
 function VWEP:CanPrimaryAttack()
     if ( self:GetReloading() ) then return false end
+    if ( self:GetCycling() ) then return false end
+
+    if ( self:GetRunning() ) then return false end
+
+    if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
+    if ( self:GetNextSecondaryFire() > CurTime() ) then return false end
 
     if ( self.Primary.CanMove ) then
         local ply = self:GetOwner()
@@ -20,7 +26,15 @@ end
 
 function VWEP:CanSecondaryAttack()
     if ( !self.IronSightsEnabled ) then return false end
+
     if ( self:GetReloading() ) then return false end
+    if ( self:GetCycling() ) then return false end
+
+    if ( self:GetIronSights() ) then return false end
+    if ( self:GetRunning() ) then return false end
+
+    if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
+    if ( self:GetNextSecondaryFire() > CurTime() ) then return false end
 
     return self:GetNextSecondaryFire() <= CurTime()
 end
@@ -35,8 +49,8 @@ function VWEP:ShootBullet(damage, num_bullets, aimcone)
     bullet.Src = self:GetOwner():GetShootPos()
     bullet.Dir = self:GetOwner():GetAimVector()
     bullet.Spread = Vector(aimcone, aimcone, 0)
-    bullet.Tracer = 1
-    bullet.TracerName = self.Effects.TracerEffect
+    bullet.Tracer = -1
+    bullet.TracerName = "nil"
     bullet.Force = damage * 0.5
     bullet.Damage = damage
     bullet.Attacker = self:GetOwner()
@@ -75,16 +89,36 @@ function VWEP:ShootEffects()
 
             util.Effect(self.Effects.MuzzleFlashEffect, effectData)
         end
-    end
 
-    if ( self.Primary.Shell ) then
-        local effectData = EffectData()
-        effectData:SetEntity(ply)
-        effectData:SetAttachment(ply:LookupAttachment("shell"))
-        effectData:SetScale(self.Primary.ShellScale or 1)
-        effectData:SetFlags(self.Primary.ShellFlags or 1)
+        if ( self.Effects.Shell ) then
+            local effectData = EffectData()
+            effectData:SetEntity(ply)
+            effectData:SetAttachment(ply:LookupAttachment("shell"))
+            effectData:SetScale(self.Effects.ShellScale or 1)
+            effectData:SetFlags(self.Effects.ShellFlags or 1)
 
-        util.Effect(self.Primary.Shell, effectData)
+            util.Effect(self.Effects.ShellEffect, effectData)
+        end
+
+        if ( self.Effects.Tracer ) then
+            local bone = ply:LookupBone(self.WorldModelBone or "ValveBiped.Bip01_R_Hand")
+            local offset = self.Effects.TracerOffset or Vector(0, 0, 0)
+            local angles = ply:EyeAngles()
+            local start = ply:GetBonePosition(bone) + angles:Forward() * offset.x + angles:Right() * offset.y + angles:Up() * offset.z
+            local endpos = start + ply:GetAimVector() * 16384
+
+            debugoverlay.Line(start, endpos, 5, Color(255, 0, 0), true)
+
+            local tracerName = self.Effects.TracerEffect
+
+            local effect = EffectData()
+            effect:SetStart(start)
+            effect:SetOrigin(endpos)
+            effect:SetScale(0.1)
+            effect:SetEntity(ply)
+
+            util.Effect(tracerName, effect)
+        end
     end
 
     if ( self.Primary.Events ) then

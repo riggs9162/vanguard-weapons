@@ -29,6 +29,13 @@ function VWEP:DoCyclingReload()
         self:SetCyclingWait(CurTime() + duration + ( self.Cycling.Delay or 0 ))
         self:SetNextPrimaryFire(CurTime() + duration)
 
+        ply:SetAnimation(PLAYER_RELOAD)
+
+        if ( self.Cycling.GiveEntry ) then
+            ply:RemoveAmmo(1, self.Primary.Ammo)
+            self:SetClip1(self:Clip1() + 1)
+        end
+
         self:SetReloading(true)
     elseif ( !self:GetReloading() ) then
         self:SetCycleWait(CurTime())
@@ -45,8 +52,6 @@ function VWEP:DoCyclingReload()
 
         ply:RemoveAmmo(1, self.Primary.Ammo)
         self:SetClip1(self:Clip1() + 1)
-
-        ply:SetAnimation(PLAYER_RELOAD)
     else
         self:SetReloading(false)
         self:SetCycling(false)

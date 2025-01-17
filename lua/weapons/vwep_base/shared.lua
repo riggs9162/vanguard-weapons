@@ -85,18 +85,18 @@ VWEP.IronSightsRunSpeed = 0.75 -- Check if the player is marked as running at th
 VWEP.IronSightsToggle = false -- Is the iron sight a toggle mechanism, mark as false if it's a hold mechanism
 
 -- Iron sights enter sound settings
-VWEP.IronSightsEnterSound = Sound("weapons/zoom.wav") -- Iron sights enter sound
-VWEP.IronSightsEnterSoundLevel = 60 -- Iron sights enter sound level, used for sound distance
-VWEP.IronSightsEnterSoundPitch = 100 -- Iron sights enter sound pitch
-VWEP.IronSightsEnterSoundVolume = 1 -- Iron sights enter sound volume
-VWEP.IronSightsEnterSoundChannel = CHAN_ITEM -- Iron sights enter sound channel
+-- VWEP.IronSightsEnterSound = Sound("weapons/zoom.wav") -- Iron sights enter sound
+-- VWEP.IronSightsEnterSoundLevel = 60 -- Iron sights enter sound level, used for sound distance
+-- VWEP.IronSightsEnterSoundPitch = 100 -- Iron sights enter sound pitch
+-- VWEP.IronSightsEnterSoundVolume = 1 -- Iron sights enter sound volume
+-- VWEP.IronSightsEnterSoundChannel = CHAN_ITEM -- Iron sights enter sound channel
 
 -- Iron sights exit sound settings
-VWEP.IronSightsExitSound = Sound("weapons/zoom.wav") -- Iron sights exit sound
-VWEP.IronSightsExitSoundLevel = 60 -- Iron sights exit sound level, used for sound distance
-VWEP.IronSightsExitSoundPitch = 100 -- Iron sights exit sound pitch
-VWEP.IronSightsExitSoundVolume = 1 -- Iron sights exit sound volume
-VWEP.IronSightsExitSoundChannel = CHAN_ITEM -- Iron sights exit sound channel
+-- VWEP.IronSightsExitSound = Sound("weapons/zoom.wav") -- Iron sights exit sound
+-- VWEP.IronSightsExitSoundLevel = 60 -- Iron sights exit sound level, used for sound distance
+-- VWEP.IronSightsExitSoundPitch = 100 -- Iron sights exit sound pitch
+-- VWEP.IronSightsExitSoundVolume = 1 -- Iron sights exit sound volume
+-- VWEP.IronSightsExitSoundChannel = CHAN_ITEM -- Iron sights exit sound channel
 
 -- Reloading settings
 VWEP.Reloading = {}
@@ -131,6 +131,7 @@ VWEP.Cycling.SequenceExit = nil -- The cycling exit animation
 VWEP.Cycling.SequenceIronSightsEntry = nil -- The cycling entry animation when iron sighting
 VWEP.Cycling.SequenceIronSights = ACT_VM_RELOAD -- The cycling animation when iron sighting
 VWEP.Cycling.SequenceIronSightsExit = nil -- The cycling exit animation when iron sighting
+VWEP.Cycling.GiveEntry = false -- Also give ammo when the cycling entry animation is finished
 VWEP.Cycling.PlaybackRate = 1 -- The playback rate of the cycling animation
 VWEP.Cycling.Sound = Sound("Weapon_Pistol.Reload") -- The cycling sound
 VWEP.Cycling.SoundLevel = 60 -- The cycling sound level, used for sound distance
@@ -255,8 +256,7 @@ VWEP.Effects.MuzzleFlashAttachment = "muzzle" -- Muzzle flash attachment
 
 VWEP.Effects.Tracer = true -- Enable tracer
 VWEP.Effects.TracerEffect = "Tracer" -- Tracer effect
-VWEP.Effects.TracerScale = 1 -- Tracer scale
-VWEP.Effects.TracerAttachment = "muzzle" -- Tracer attachment
+VWEP.Effects.TracerOffset = Vector(0, 0, 0) -- Tracer offset from the world model
 
 VWEP.FireModes = {}
 VWEP.FireModes.Enabled = false -- Enable fire modes
@@ -391,6 +391,9 @@ function VWEP:SecondaryAttack()
 end
 
 function VWEP:ThinkIdle()
+    -- Don't idle if cycling or reloading
+    if ( self:GetCycling() or self:GetReloading() ) then return end
+
     if ( !self:GetNextIdle() ) then
         self:SetNextIdle(0)
     end
