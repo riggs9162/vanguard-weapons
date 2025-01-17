@@ -158,11 +158,13 @@ VWEP.Winding = {}
 VWEP.Winding.Enabled = false -- Enable wind up
 VWEP.Winding.Duration = 2 -- The time the owner has to hold the trigger to wind up
 VWEP.Winding.MaxDuration = 5 -- The maximum time the owner fire his weapon before it winds down forcefully
+
 VWEP.Winding.SoundUp = Sound("Weapon_Minigun.WindUp") -- The sound that plays when the minigun is winding up
 VWEP.Winding.SoundUpLevel = 60 -- The sound level of the wind up sound
 VWEP.Winding.SoundUpPitch = 100 -- The sound pitch of the wind up sound
 VWEP.Winding.SoundUpVolume = 1 -- The sound volume of the wind up sound
 VWEP.Winding.SoundUpChannel = CHAN_ITEM -- The sound channel of the wind up sound
+
 VWEP.Winding.SoundDown = Sound("Weapon_Minigun.WindDown") -- The sound that plays when the minigun is winding down
 VWEP.Winding.SoundDownLevel = 60 -- The sound level of the wind down sound
 VWEP.Winding.SoundDownPitch = 100 -- The sound pitch of the wind down sound
@@ -338,8 +340,8 @@ function VWEP:SetupDataTables()
     -- Winding
     self:NetworkVar("Bool", 5, "Winding")
     self:NetworkVar("Bool", 6, "WindedUp")
-    self:NetworkVar("Float", 4, "WindingWait")
-    self:NetworkVar("Float", 5, "WindingStart")
+    self:NetworkVar("Float", 4, "WindingStart")
+    self:NetworkVar("Float", 5, "WindingCooldown")
 
     if ( self.PostSetupDataTables ) then
         self:PostSetupDataTables()
@@ -359,6 +361,11 @@ function VWEP:Initialize()
     self:SetFireMode(1)
     self:SetRunning(false)
     self:SetRunningWait(0)
+
+    self:SetWinding(false)
+    self:SetWindedUp(false)
+    self:SetWindingStart(0)
+    self:SetWindingCooldown(0)
 
     if ( self.PostInitialize ) then
         self:PostInitialize()
@@ -418,7 +425,7 @@ function VWEP:ThinkIdle()
 end
 
 function VWEP:ThinkWalking()
-    if ( CLIENT or !self.Walking or !self.Walking.Enabled ) then return end
+    if ( !self.Walking or !self.Walking.Enabled ) then return end
     if ( self:GetCycling() or self:GetReloading() ) then return end
 
     local ply = self:GetOwner()
@@ -488,7 +495,7 @@ function VWEP:ThinkWalking()
 end
 
 function VWEP:ThinkRunning()
-    if ( CLIENT or !self.Running or !self.Running.Enabled ) then return end
+    if ( !self.Running or !self.Running.Enabled ) then return end
     if ( self:GetCycling() or self:GetReloading() ) then return end
 
     local ply = self:GetOwner()
@@ -565,7 +572,7 @@ function VWEP:ThinkWinding()
     if ( !IsValid(ply) ) then return end
 
     local holding = ply:KeyDown(IN_ATTACK)
-    if ( holding and !self:GetWinding() ) then
+    if ( holding and !self:GetWinding() and CurTime() > self:GetWindingCooldown() ) then
         print("Start winding")
         self:SetWinding(true)
         self:SetWindingStart(CurTime())
@@ -577,36 +584,35 @@ function VWEP:ThinkWinding()
         elseif ( self.WindingSoundUp and !self.WindingSoundUp:IsPlaying() ) then
             self.WindingSoundUp:Play()
         end
-    elseif ( holding and self:GetWinding() ) then
-        if ( self:GetWindingStart() and CurTime() - self:GetWindingStart() >= self.Winding.Duration ) then
-            if ( !self:GetWindedUp() ) then
-                print("Winded up")
-                self:SetWindedUp(true)
+    elseif ( holding and self:GetWinding() and CurTime() - self:GetWindingStart() >= self.Winding.Duration and CurTime() > self:GetWindingCooldown() ) then
+        if ( !self:GetWindedUp() ) then
+            print("Winded up")
+            self:SetWindedUp(true)
 
-                if ( self.WindingSoundUp and self.WindingSoundUp:IsPlaying() ) then
-                    self.WindingSoundUp:Stop()
-                end
-            else
-                if ( self:CanPrimaryAttack() ) then
-                    if ( self.Winding.MaxDuration and CurTime() - self:GetWindingStart() >= self.Winding.MaxDuration ) then
-                        print("Winding down forcefully")
-                        self:SetWinding(false)
-                        self:SetWindedUp(false)
-    
-                        if ( self.WindingSoundUp and self.WindingSoundUp:IsPlaying() ) then
-                            self.WindingSoundUp:Stop()
-                        end
-    
-                        if ( self.WindingSoundDown ) then
-                            self:EmitSound(self.WindingSoundDown, self.Winding.SoundDownLevel or 60, self.Winding.SoundDownPitch or 100, self.Winding.SoundDownVolume or 1, self.Winding.SoundDownChannel or CHAN_ITEM)
-                        end
+            if ( self.WindingSoundUp and self.WindingSoundUp:IsPlaying() ) then
+                self.WindingSoundUp:Stop()
+            end
+        else
+            if ( self:CanPrimaryAttack() ) then
+                if ( self.Winding.MaxDuration and CurTime() - self:GetWindingStart() >= self.Winding.MaxDuration ) then
+                    print("Winding down forcefully")
+                    self:SetWinding(false)
+                    self:SetWindedUp(false)
+                    self:SetWindingCooldown(CurTime() + self.Winding.Duration)
+
+                    if ( self.WindingSoundUp and self.WindingSoundUp:IsPlaying() ) then
+                        self.WindingSoundUp:Stop()
                     end
-                    print("Shooting")
-                    self:Shoot()
+
+                    if ( self.Winding.SoundDown ) then
+                        self:EmitSound(self.Winding.SoundDown, self.Winding.SoundDownLevel or 60, self.Winding.SoundDownPitch or 100, self.Winding.SoundDownVolume or 1, self.Winding.SoundDownChannel or CHAN_ITEM)
+                    end
                 end
+                print("Shooting")
+                self:Shoot()
             end
         end
-    elseif ( !holding ) then
+    elseif ( !holding and self:GetWinding() ) then
         if ( self:GetWinding() ) then
             print("Stop winding")
             self:SetWinding(false)
@@ -616,10 +622,12 @@ function VWEP:ThinkWinding()
                 self.WindingSoundUp:Stop()
             end
 
-            if ( self.WindingSoundDown ) then
-                self:EmitSound(self.WindingSoundDown, self.Winding.SoundDownLevel or 60, self.Winding.SoundDownPitch or 100, self.Winding.SoundDownVolume or 1, self.Winding.SoundDownChannel or CHAN_ITEM)
+            if ( self.Winding.SoundDown ) then
+                self:EmitSound(self.Winding.SoundDown, self.Winding.SoundDownLevel or 60, self.Winding.SoundDownPitch or 100, self.Winding.SoundDownVolume or 1, self.Winding.SoundDownChannel or CHAN_ITEM)
             end
         end
+    elseif ( !holding and !self:GetWinding() and CurTime() > self:GetWindingCooldown() ) then
+        self:SetWindingCooldown(0)
     end
 end
 
