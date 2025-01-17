@@ -183,7 +183,7 @@ function VWEP:Shoot()
             recoilAngle = recoilAngle * self.Primary.Recoil
         end
 
-        ply:ViewPunch(recoilAngle)
+        ply:ViewPunch(recoilAngle * 0.5)
 
         if ( IsFirstTimePredicted() or game.SinglePlayer() ) then
             ply:SetEyeAngles(ply:EyeAngles() + recoilAngle * 0.75)
