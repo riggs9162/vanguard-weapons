@@ -64,6 +64,11 @@ function VWEP:DrawWorldModel()
             local light = DynamicLight(self:EntIndex() + k)
             if ( !light ) then continue end
 
+            if ( v.ShouldEmitLight and !v:ShouldEmitLight() ) then
+                light.DieTime = CurTime()
+                continue
+            end
+
             light.Pos = pos + ang:Forward() * v.Pos.x + ang:Right() * v.Pos.y + ang:Up() * v.Pos.z
             light.Brightness = v.Brightness or 1
             light.Size = v.Size or 128
