@@ -258,7 +258,7 @@ VWEP.Effects.MuzzleFlashAttachment = "muzzle" -- Muzzle flash attachment
 
 VWEP.Effects.TracerCustom = false -- Wether or not we are using lua based tracers
 VWEP.Effects.TracerEffect = "Tracer" -- Tracer effect
-VWEP.Effects.TracerOffset = Vector(0, 0, 0) -- Tracer offset from the world model
+VWEP.Effects.TracerOffset = Vector(0, 0, 0) -- Tracer offset from the world model, only works with lua based tracers
 
 VWEP.FireModes = {}
 VWEP.FireModes.Enabled = false -- Enable fire modes
