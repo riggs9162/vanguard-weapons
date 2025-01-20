@@ -63,8 +63,15 @@ function VWEP:ShootBullet(damage, num_bullets, aimcone)
     bullet.Src = self:GetOwner():GetShootPos()
     bullet.Dir = self:GetOwner():GetAimVector()
     bullet.Spread = Vector(aimcone, aimcone, 0)
-    bullet.Tracer = -1
-    bullet.TracerName = nil
+
+    if ( self.Effects.TracerCustom and self.Effects.TracerEffect ) then
+        bullet.Tracer = -1
+        bullet.TracerName = nil
+    else
+        bullet.Tracer = 1
+        bullet.TracerName = self.Effects.TracerEffect
+    end
+
     bullet.Force = damage / 2
     bullet.Damage = damage
     bullet.Attacker = self:GetOwner()
@@ -117,7 +124,7 @@ function VWEP:ShootEffects()
             util.Effect(self.Effects.ShellEffect, effectData)
         end
 
-        if ( self.Effects.Tracer ) then
+        if ( self.Effects.TracerCustom and self.Effects.TracerEffect ) then
             local tracerOffset = self.Effects.TracerOffset or Vector(0, 0, 0)
             local startPos = muzzlePos + ply:GetAimVector() * tracerOffset.x + ply:GetRight() * tracerOffset.y + ply:GetUp() * tracerOffset.z
             local trace = util.TraceLine({
