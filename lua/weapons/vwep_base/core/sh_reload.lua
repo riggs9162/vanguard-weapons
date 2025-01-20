@@ -11,9 +11,6 @@ function VWEP:CanReload()
     -- We might be wanting to switch fire modes, so prevent reloading
     if ( self.FireModes.Enabled and ply:KeyDown(IN_SPEED) ) then return false end
 
-    if ( self:GetIronSights() ) then return false end
-    if ( self:GetRunning() ) then return false end
-
     if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
     if ( self:GetNextSecondaryFire() > CurTime() ) then return false end
 
@@ -81,7 +78,6 @@ function VWEP:DoCyclingReload()
 end
 
 function VWEP:Reload()
-    if ( !IsFirstTimePredicted() ) then return end
     if ( !self:CanReload() ) then return end
 
     local ply = self:GetOwner()

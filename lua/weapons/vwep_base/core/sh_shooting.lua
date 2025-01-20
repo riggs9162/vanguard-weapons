@@ -16,12 +16,12 @@ function VWEP:CanPrimaryAttack()
         vel = math.Round(vel, 2)
         vel = math.Clamp(vel, 0, 1)
 
-        if ( vel > self.Primary.RunSpeed ) then
-            return self.Primary.CanMoveRun and true or false
+        if ( vel > self.Primary.RunSpeed and !self.Primary.CanMoveRun ) then
+            return false
         end
     end
 
-    return self:GetNextPrimaryFire() <= CurTime()
+    return true
 end
 
 function VWEP:CanSecondaryAttack()
@@ -36,7 +36,21 @@ function VWEP:CanSecondaryAttack()
     if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
     if ( self:GetNextSecondaryFire() > CurTime() ) then return false end
 
-    return self:GetNextSecondaryFire() <= CurTime()
+    if ( self.Secondary.CanMove ) then
+        local ply = self:GetOwner()
+        if ( !IsValid(ply) ) then return false end
+
+        local runSpeed = ply:GetRunSpeed()
+        local vel = ply:GetVelocity():Length2D() / runSpeed
+        vel = math.Round(vel, 2)
+        vel = math.Clamp(vel, 0, 1)
+
+        if ( vel > self.Secondary.RunSpeed and !self.Secondary.CanMoveRun ) then
+            return false
+        end
+    end
+
+    return true
 end
 
 function VWEP:ShootBullet(damage, num_bullets, aimcone)
@@ -50,8 +64,8 @@ function VWEP:ShootBullet(damage, num_bullets, aimcone)
     bullet.Dir = self:GetOwner():GetAimVector()
     bullet.Spread = Vector(aimcone, aimcone, 0)
     bullet.Tracer = -1
-    bullet.TracerName = "nil"
-    bullet.Force = damage * 0.5
+    bullet.TracerName = nil
+    bullet.Force = damage / 2
     bullet.Damage = damage
     bullet.Attacker = self:GetOwner()
 
@@ -80,10 +94,13 @@ function VWEP:ShootEffects()
             ent = self:GetWorldModelEntity()
         end
 
+        local muzzleAttachment = ent:LookupAttachment(self.Effects.MuzzleFlashAttachment or "muzzle")
+        local muzzlePos = ent:GetAttachment(muzzleAttachment).Pos
+
         if ( IsValid(ent) and self.Effects.MuzzleFlash ) then
             local effectData = EffectData()
             effectData:SetEntity(ent)
-            effectData:SetAttachment(ent:LookupAttachment(self.Effects.MuzzleFlashAttachment or "muzzle"))
+            effectData:SetAttachment(muzzleAttachment)
             effectData:SetScale(self.Effects.MuzzleFlashScale or 1)
             effectData:SetFlags(self.Effects.MuzzleFlashFlags or 1)
 
@@ -101,23 +118,17 @@ function VWEP:ShootEffects()
         end
 
         if ( self.Effects.Tracer ) then
-            local bone = ply:LookupBone(self.WorldModelBone or "ValveBiped.Bip01_R_Hand")
-            local offset = self.Effects.TracerOffset or Vector(0, 0, 0)
-            local angles = ply:EyeAngles()
-            local start = ply:GetBonePosition(bone) + angles:Forward() * offset.x + angles:Right() * offset.y + angles:Up() * offset.z
-            local endpos = start + ply:GetAimVector() * 16384
+            local tracerOffset = self.Effects.TracerOffset or Vector(0, 0, 0)
+            local startPos = muzzlePos + ply:GetAimVector() * tracerOffset.x + ply:GetRight() * tracerOffset.y + ply:GetUp() * tracerOffset.z
+            local trace = util.TraceLine({
+                start = startPos,
+                endpos = startPos + ply:GetAimVector() * 16384,
+                filter = ply
+            })
 
-            debugoverlay.Line(start, endpos, 5, Color(255, 0, 0), true)
+            local endPos = trace.HitPos
 
-            local tracerName = self.Effects.TracerEffect
-
-            local effect = EffectData()
-            effect:SetStart(start)
-            effect:SetOrigin(endpos)
-            effect:SetScale(0.1)
-            effect:SetEntity(ply)
-
-            util.Effect(tracerName, effect)
+            util.ParticleTracerEx(self.Effects.TracerEffect, startPos, endPos, 1, 0, -1)
         end
     end
 
@@ -127,9 +138,7 @@ function VWEP:ShootEffects()
             local func = data.Function
 
             timer.Simple(time, function()
-                if ( !IsValid(self) or !IsValid(ply) ) then return end
-
-                if ( func ) then
+                if ( IsValid(self) and IsValid(ply) and func ) then
                     func(self, ply)
                 end
             end)
@@ -183,7 +192,7 @@ function VWEP:Shoot()
             recoilAngle = recoilAngle * self.Primary.Recoil
         end
 
-        ply:ViewPunch(recoilAngle * 0.5)
+        ply:ViewPunch(recoilAngle)
 
         if ( IsFirstTimePredicted() or game.SinglePlayer() ) then
             ply:SetEyeAngles(ply:EyeAngles() + recoilAngle * 0.75)
