@@ -128,8 +128,8 @@ function VWEP:ShootEffects()
             local tracerOffset = self.Effects.TracerOffset or Vector(0, 0, 0)
             local startPos = muzzlePos + ply:GetAimVector() * tracerOffset.x + ply:GetRight() * tracerOffset.y + ply:GetUp() * tracerOffset.z
             local trace = util.TraceLine({
-                start = startPos,
-                endpos = startPos + ply:GetAimVector() * 16384,
+                start = ply:GetShootPos(),
+                endpos = ply:GetShootPos() + ply:GetAimVector() * 16384,
                 filter = ply
             })
 
