@@ -129,8 +129,6 @@ function VWEP:Reload()
         end
     end
 
-    self:SetNextPrimaryFire(CurTime() + duration)
-
     if ( CLIENT ) then
         ply:SetAnimation(PLAYER_RELOAD)
 

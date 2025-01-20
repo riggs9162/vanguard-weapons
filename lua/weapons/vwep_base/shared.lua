@@ -435,7 +435,6 @@ end
 
 function VWEP:ThinkWalking()
     if ( !self.Walking or !self.Walking.Enabled ) then return end
-    if ( self:GetCycling() or self:GetReloading() ) then return end
 
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
@@ -505,7 +504,6 @@ end
 
 function VWEP:ThinkRunning()
     if ( !self.Running or !self.Running.Enabled ) then return end
-    if ( self:GetCycling() or self:GetReloading() ) then return end
 
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
@@ -575,7 +573,6 @@ end
 
 function VWEP:ThinkWinding()
     if ( !self.Winding or !self.Winding.Enabled ) then return end
-    if ( self:GetCycling() or self:GetReloading() ) then return end
 
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
@@ -644,6 +641,12 @@ function VWEP:Think()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
 
+    if ( self.PreThink ) then
+        self:PreThink()
+    end
+
+    if ( self:GetCycling() or self:GetReloading() ) then return end
+
     self:ThinkIdle()
     self:ThinkWalking()
     self:ThinkRunning()
@@ -651,6 +654,10 @@ function VWEP:Think()
     self:ThinkFireModes()
     self:ThinkCycling()
     self:ThinkWinding()
+
+    if ( self.PostThink ) then
+        self:PostThink()
+    end
 end
 
 function VWEP:Deploy()
