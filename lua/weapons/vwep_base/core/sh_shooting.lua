@@ -95,7 +95,7 @@ function VWEP:ShootEffects()
         end
 
         local muzzleAttachment = ent:LookupAttachment(self.Effects.MuzzleFlashAttachment or "muzzle")
-        local muzzlePos = ent:GetAttachment(muzzleAttachment).Pos
+        local muzzlePos = ent:GetAttachment(muzzleAttachment) and ent:GetAttachment(muzzleAttachment).Pos or ply:GetShootPos()
 
         if ( IsValid(ent) and self.Effects.MuzzleFlash ) then
             local effectData = EffectData()
