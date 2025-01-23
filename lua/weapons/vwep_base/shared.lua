@@ -645,7 +645,10 @@ function VWEP:Think()
         self:PreThink()
     end
 
-    if ( self:GetCycling() or self:GetReloading() ) then return end
+    if ( self:GetCycling() or self:GetReloading() ) then
+        self:ThinkCycling()
+        return
+    end
 
     self:ThinkIdle()
     self:ThinkWalking()
