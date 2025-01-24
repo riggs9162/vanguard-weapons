@@ -11,7 +11,3 @@ vanguard.util:Include("sh_firemodes.lua")
 vanguard.util:Include("sh_util.lua")
 
 vanguard.modules:Register(MODULE)
-
-hook.Add("OnReloaded", "Vanguard." .. MODULE.Name .. ".Reload", function()
-    vanguard.util:IncludeDir("weapons/vwep_base/core")
-end)
