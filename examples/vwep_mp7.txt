@@ -49,7 +49,7 @@ SWEP.Primary.SoundChannel = CHAN_WEAPON
 
 SWEP.IronSightsEnabled = true
 SWEP.IronSightsPos = Vector(-6.401, -2.221, 1.029)
-SWEP.IronSightsAng = Vector(0, 0, 0)
+SWEP.IronSightsAng = vector_origin
 SWEP.IronSightsFOV = 0.75
 SWEP.IronSightsSensitivity = 0.5
 SWEP.IronSightsCanMove = true
@@ -73,8 +73,8 @@ SWEP.ViewModelSkin = 0
 SWEP.ViewModelBodygroups = {}
 SWEP.ViewModelFOV = 50
 SWEP.ViewModelFlip = false
-SWEP.ViewModelOffset = Vector(0, 0, 0)
-SWEP.ViewModelOffsetAng = Angle(0, 0, 0)
+SWEP.ViewModelOffset = vector_origin
+SWEP.ViewModelOffsetAng = angle_zero
 SWEP.ViewModelScale = 1
 SWEP.ViewModelDynamicLights = {}
 
