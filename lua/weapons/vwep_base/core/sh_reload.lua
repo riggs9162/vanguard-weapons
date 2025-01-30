@@ -1,4 +1,4 @@
-function VWEP:CanReload()
+function SWEP:CanReload()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return false end
 
@@ -17,7 +17,7 @@ function VWEP:CanReload()
     return self:Clip1() < self.Primary.ClipSize and self:GetOwner():GetAmmoCount(self.Primary.Ammo) > 0
 end
 
-function VWEP:DoCyclingReload()
+function SWEP:DoCyclingReload()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
 
@@ -77,7 +77,7 @@ function VWEP:DoCyclingReload()
     end
 end
 
-function VWEP:Reload()
+function SWEP:Reload()
     if ( !self:CanReload() ) then return end
 
     local ply = self:GetOwner()
@@ -161,7 +161,7 @@ function VWEP:Reload()
     end
 end
 
-function VWEP:ThinkCycling()
+function SWEP:ThinkCycling()
     if ( !self:GetCycling() ) then return end
     if ( self:GetCyclingWait() > CurTime() ) then return end
 

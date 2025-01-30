@@ -1,4 +1,4 @@
-function VWEP:CanPrimaryAttack()
+function SWEP:CanPrimaryAttack()
     if ( self:GetReloading() ) then return false end
     if ( self:GetCycling() ) then return false end
 
@@ -24,7 +24,7 @@ function VWEP:CanPrimaryAttack()
     return true
 end
 
-function VWEP:CanSecondaryAttack()
+function SWEP:CanSecondaryAttack()
     if ( !self.IronSightsEnabled ) then return false end
 
     if ( self:GetReloading() ) then return false end
@@ -53,7 +53,7 @@ function VWEP:CanSecondaryAttack()
     return true
 end
 
-function VWEP:ShootBullet(damage, num_bullets, aimcone)
+function SWEP:ShootBullet(damage, num_bullets, aimcone)
     if ( self.PreShootBullet ) then
         self:PreShootBullet(damage, num_bullets, aimcone)
     end
@@ -84,7 +84,7 @@ function VWEP:ShootBullet(damage, num_bullets, aimcone)
     end
 end
 
-function VWEP:ShootEffects()
+function SWEP:ShootEffects()
     if ( self.PreShootEffects ) then
         self:PreShootEffects()
     end
@@ -169,7 +169,7 @@ function VWEP:ShootEffects()
     end
 end
 
-function VWEP:CalculateNextPrimaryFire()
+function SWEP:CalculateNextPrimaryFire()
     if ( self.Primary.RPM ) then
         return CurTime() + ( 60 / self.Primary.RPM )
     end
@@ -177,7 +177,7 @@ function VWEP:CalculateNextPrimaryFire()
     return CurTime() + self.Primary.Delay
 end
 
-function VWEP:Shoot()
+function SWEP:Shoot()
     if ( self:Clip1() <= 0 ) then
         self:EmitSound(self.Primary.SoundEmpty, 60, 100, 1, CHAN_WEAPON)
         self:SetNextPrimaryFire(CurTime() + 1)
@@ -209,7 +209,7 @@ function VWEP:Shoot()
     self:SetNextPrimaryFire(self:CalculateNextPrimaryFire())
 end
 
-function VWEP:PrimaryAttack()
+function SWEP:PrimaryAttack()
     if ( self.Winding.Enabled ) then return end
     if ( !self:CanPrimaryAttack() ) then return end
 

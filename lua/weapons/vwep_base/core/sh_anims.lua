@@ -1,4 +1,4 @@
-function VWEP:PlayAnimation(anim, rate)
+function SWEP:PlayAnimation(anim, rate)
     local vm = self:GetOwner():GetViewModel()
     if ( !IsValid(vm) ) then return end
 
@@ -11,14 +11,14 @@ function VWEP:PlayAnimation(anim, rate)
     return sequence, vm:SequenceDuration(sequence) / vm:GetPlaybackRate()
 end
 
-function VWEP:ResetAnimation()
+function SWEP:ResetAnimation()
     local vm = self:GetOwner():GetViewModel()
     if ( !IsValid(vm) ) then return end
 
     vm:ResetSequence(vm:LookupSequence("idle"))
 end
 
-function VWEP:GetShootGesture()
+function SWEP:GetShootGesture()
     local gesture = self.Primary.Gesture or ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL
     if ( self:GetIronSights() ) then
         gesture = self.Primary.GestureIronSights
@@ -33,7 +33,7 @@ function VWEP:GetShootGesture()
     return gesture
 end
 
-function VWEP:GetViewModelShootAnimation()
+function SWEP:GetViewModelShootAnimation()
     local shootSequence = self.Primary.Sequence or ACT_VM_PRIMARYATTACK
     if ( self:GetIronSights() ) then
         shootSequence = self.Primary.SequenceIronSights or shootSequence
@@ -48,7 +48,7 @@ function VWEP:GetViewModelShootAnimation()
     return shootSequence
 end
 
-function VWEP:GetViewModelPumpActionAnimation()
+function SWEP:GetViewModelPumpActionAnimation()
     local pumpSequence = self.PumpAction.Sequence or ACT_SHOTGUN_PUMP
     if ( self:GetIronSights() ) then
         pumpSequence = self.PumpAction.SequenceIronSights or pumpSequence
@@ -63,7 +63,7 @@ function VWEP:GetViewModelPumpActionAnimation()
     return pumpSequence
 end
 
-function VWEP:GetViewModelReloadAnimation(bIronsighted)
+function SWEP:GetViewModelReloadAnimation(bIronsighted)
     local clip = self:Clip1()
     local reloadSequence = self.Reloading.Sequence or ACT_VM_RELOAD
 

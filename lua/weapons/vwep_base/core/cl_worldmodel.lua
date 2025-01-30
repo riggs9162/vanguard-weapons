@@ -1,13 +1,13 @@
-function VWEP:GetWorldModelEntity()
+function SWEP:GetWorldModelEntity()
     return self.WorldModelEntity
 end
 
-function VWEP:SetWorldModelEntity(ent)
+function SWEP:SetWorldModelEntity(ent)
     self.WorldModelEntity = ent
 end
 
 local WorldModel
-function VWEP:DrawWorldModel()
+function SWEP:DrawWorldModel()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
 

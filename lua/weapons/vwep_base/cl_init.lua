@@ -1,10 +1,8 @@
-VWEP = SWEP
-
 vanguard.util:Include("shared.lua")
 
 local lerpFOV
 local lerpLastUpdate = 0
-function VWEP:TranslateFOV(fov)
+function SWEP:TranslateFOV(fov)
     if ( !lerpFOV ) then lerpFOV = 1 end
 
     local owner = self:GetOwner()
@@ -23,7 +21,7 @@ function VWEP:TranslateFOV(fov)
     return fov * lerpFOV
 end
 
-function VWEP:AdjustMouseSensitivity()
+function SWEP:AdjustMouseSensitivity()
     local bIron = self:GetIronSights()
     if ( bIron ) then
         return self.IronSightsSensitivity or 0.5
@@ -32,14 +30,14 @@ function VWEP:AdjustMouseSensitivity()
     end
 end
 
-function VWEP:EnabledDevMode()
+function SWEP:EnabledDevMode()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return false end
 
-    return ply:GetNW2Bool("VWEP.DevMode", false)
+    return ply:GetNW2Bool("SWEP.DevMode", false)
 end
 
-function VWEP:DrawHUD()
+function SWEP:DrawHUD()
     if ( self.PreDrawHUD ) then
         self:PreDrawHUD()
     end

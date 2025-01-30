@@ -1,6 +1,6 @@
 local lerpIron
 local lerpLastUpdate = 0
-function VWEP:GetViewModelPosition(pos, ang)
+function SWEP:GetViewModelPosition(pos, ang)
     if ( !IsValid(self:GetOwner()) ) then return pos, ang end
 
     if ( !lerpIron ) then lerpIron = 0 end
@@ -40,9 +40,9 @@ function VWEP:GetViewModelPosition(pos, ang)
     return pos, ang
 end
 
-VWEP.ViewModelElementsStored = VWEP.ViewModelElementsStored or {}
+SWEP.ViewModelElementsStored = SWEP.ViewModelElementsStored or {}
 
-function VWEP:PreDrawViewModel(vm, weapon, ply)
+function SWEP:PreDrawViewModel(vm, weapon, ply)
     if ( !IsValid(vm) ) then return end
     if ( !IsValid(weapon) ) then return end
     if ( !IsValid(ply) ) then return end

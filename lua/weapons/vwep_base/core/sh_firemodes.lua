@@ -1,5 +1,5 @@
 local switchCooldown = 0
-function VWEP:ThinkFireModes()
+function SWEP:ThinkFireModes()
     if ( !self.FireModes.Enabled ) then return end
 
     if ( self.PreThinkFireModes ) then
@@ -30,7 +30,7 @@ function VWEP:ThinkFireModes()
     hook.Run("VWEP_PostFireModeThink", self)
 end
 
-function VWEP:ToggleFireMode()
+function SWEP:ToggleFireMode()
     if ( !self.FireModes.Enabled ) then return end
 
     if ( self.PreToggleFireMode ) then

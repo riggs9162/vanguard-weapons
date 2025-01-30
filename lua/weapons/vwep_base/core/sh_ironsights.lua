@@ -1,4 +1,4 @@
-function VWEP:CanIronSight()
+function SWEP:CanIronSight()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return false end
 
@@ -20,7 +20,7 @@ function VWEP:CanIronSight()
     return true
 end
 
-function VWEP:ThinkIronSights()
+function SWEP:ThinkIronSights()
     local ply = self:GetOwner()
     if ( self:GetIronSights() and !self:CanIronSight() ) then
         self:SetIronSights(false)
