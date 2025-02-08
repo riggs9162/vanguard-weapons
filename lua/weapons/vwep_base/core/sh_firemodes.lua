@@ -59,8 +59,6 @@ function SWEP:ToggleFireMode()
     if ( self.FireModes.Sound ) then
         self:EmitSound(self.FireModes.Sound, self.FireModes.SoundLevel or 60, self.FireModes.SoundPitch or 100, self.FireModes.SoundVolume or 1, self.FireModes.SoundChannel or CHAN_ITEM)
     end
-
-    self:SetNextPrimaryFire(CurTime() + self.FireModes.Delay)
     
     if ( self.PostFireModeChanged ) then
         self:PostFireModeChanged(mode)

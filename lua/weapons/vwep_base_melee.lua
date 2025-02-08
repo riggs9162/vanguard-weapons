@@ -371,7 +371,7 @@ function SWEP:ThinkIdle()
     end
 end
 
-function VWEP:ThinkWalking()
+function SWEP:ThinkWalking()
     if ( CLIENT or !self.Walking or !self.Walking.Enabled ) then return end
 
     local ply = self:GetOwner()
@@ -411,7 +411,7 @@ function VWEP:ThinkWalking()
     end
 end
 
-function VWEP:ThinkRunning()
+function SWEP:ThinkRunning()
     if ( CLIENT or !self.Running or !self.Running.Enabled ) then return end
 
     local ply = self:GetOwner()

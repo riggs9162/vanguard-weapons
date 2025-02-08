@@ -8,12 +8,6 @@ function SWEP:CanReload()
     if ( ply.IsWepRaised and !ply:IsWepRaised() ) then return false end
     if ( ply.IsWeaponRaised and !ply:IsWeaponRaised() ) then return false end
 
-    -- We might be wanting to switch fire modes, so prevent reloading
-    if ( self.FireModes.Enabled and ply:KeyDown(IN_SPEED) ) then return false end
-
-    if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
-    if ( self:GetNextSecondaryFire() > CurTime() ) then return false end
-
     return self:Clip1() < self.Primary.ClipSize and self:GetOwner():GetAmmoCount(self.Primary.Ammo) > 0
 end
 
@@ -24,7 +18,6 @@ function SWEP:DoCyclingReload()
     if ( !self:GetReloading() and self.Cycling.SequenceEntry ) then
         local _, duration = self:PlayAnimation(self.Cycling.SequenceEntry, self.Cycling.PlaybackRate)
         self:SetCyclingWait(CurTime() + duration + ( self.Cycling.Delay or 0 ))
-        self:SetNextPrimaryFire(CurTime() + duration)
 
         ply:SetAnimation(PLAYER_RELOAD)
 
@@ -40,7 +33,6 @@ function SWEP:DoCyclingReload()
     elseif ( self:Clip1() < self.Primary.ClipSize ) then
         local _, duration = self:PlayAnimation(self.Cycling.Sequence, self.Cycling.PlaybackRate)
         self:SetCyclingWait(CurTime() + duration + ( self.Cycling.Delay or 0 ))
-        self:SetNextPrimaryFire(CurTime() + duration)
 
         if ( CLIENT ) then
             local cycleSound, cycleSoundLevel, cycleSoundPitch, cycleSoundVolume, cycleSoundChannel = self.Cycling.Sound, self.Cycling.SoundLevel, self.Cycling.SoundPitch, self.Cycling.SoundVolume, self.Cycling.SoundChannel
@@ -56,7 +48,6 @@ function SWEP:DoCyclingReload()
         if ( self.Cycling.SequenceExit ) then
             local _, duration = self:PlayAnimation(self.Cycling.SequenceExit, self.Cycling.PlaybackRate)
             self:QueueIdle()
-            self:SetNextPrimaryFire(CurTime() + duration)
         end
 
         timer.Simple(duration or 0, function()

@@ -4,13 +4,11 @@ function SWEP:CanIronSight()
 
     if ( !self.IronSightsEnabled ) then return false end
     if ( self:GetReloading() ) then return false end
-    if ( ply:KeyDown(IN_USE) ) then return false end
 
     if ( self.IronSightsCanMove ) then
         local runSpeed = ply:GetRunSpeed()
         local vel = ply:GetVelocity():Length2D() / runSpeed
-        vel = math.Round(vel, 2)
-        vel = math.Clamp(vel, 0, 1)
+        vel = math.Clamp(math.Round(vel, 2), 0, 1)
 
         if ( vel > self.IronSightsRunSpeed ) then
             return self.IronSightsCanMoveRun and true or false

@@ -1,56 +1,54 @@
 function SWEP:CanPrimaryAttack()
-    if ( self:GetReloading() ) then return false end
-    if ( self:GetCycling() ) then return false end
+    if ( self:GetReloading() ) then return false, "reloading" end
+    if ( self:GetCycling() ) then return false, "cycling" end
 
-    if ( self:GetRunning() ) then return false end
+    if ( self:GetRunning() or self:GetRunningWait() > CurTime() ) then return false, "running" end
 
-    if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
-    if ( self:GetNextSecondaryFire() > CurTime() ) then return false end
+    if ( self:GetNextPrimaryFire() > CurTime() ) then return false, "next primary fire" end
+    if ( self:GetNextSecondaryFire() > CurTime() ) then return false, "next secondary fire" end
 
     if ( self.Primary.CanMove ) then
         local ply = self:GetOwner()
-        if ( !IsValid(ply) ) then return false end
+        if ( !IsValid(ply) ) then return false, "invalid owner" end
 
         local runSpeed = ply:GetRunSpeed()
         local vel = ply:GetVelocity():Length2D() / runSpeed
-        vel = math.Round(vel, 2)
-        vel = math.Clamp(vel, 0, 1)
+        vel = math.Clamp(math.Round(vel, 2), 0, 1)
 
         if ( vel > self.Primary.RunSpeed and !self.Primary.CanMoveRun ) then
-            return false
+            return false, "running speed"
         end
     end
 
-    return true
+    return true, "can primary attack"
 end
 
 function SWEP:CanSecondaryAttack()
-    if ( !self.IronSightsEnabled ) then return false end
+    if ( !self.IronSightsEnabled ) then return false, "iron sights disabled" end
 
-    if ( self:GetReloading() ) then return false end
-    if ( self:GetCycling() ) then return false end
+    if ( self:GetReloading() ) then return false, "reloading" end
+    if ( self:GetCycling() ) then return false, "cycling" end
 
-    if ( self:GetIronSights() ) then return false end
-    if ( self:GetRunning() ) then return false end
+    if ( self:GetIronSights() ) then return false, "iron sights" end
+    if ( self:GetRunning() ) then return false, "running" end
 
-    if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
-    if ( self:GetNextSecondaryFire() > CurTime() ) then return false end
+    if ( self:GetNextPrimaryFire() > CurTime() ) then return false, "next primary fire" end
+    if ( self:GetNextSecondaryFire() > CurTime() ) then return false, "next secondary fire" end
 
     if ( self.Secondary.CanMove ) then
         local ply = self:GetOwner()
-        if ( !IsValid(ply) ) then return false end
+        if ( !IsValid(ply) ) then return false, "invalid owner" end
 
         local runSpeed = ply:GetRunSpeed()
         local vel = ply:GetVelocity():Length2D() / runSpeed
-        vel = math.Round(vel, 2)
-        vel = math.Clamp(vel, 0, 1)
+        vel = math.Clamp(math.Round(vel, 2), 0, 1)
 
         if ( vel > self.Secondary.RunSpeed and !self.Secondary.CanMoveRun ) then
-            return false
+            return false, "running speed"
         end
     end
 
-    return true
+    return true, "can secondary attack"
 end
 
 function SWEP:ShootBullet(damage, num_bullets, aimcone)
@@ -170,18 +168,26 @@ function SWEP:ShootEffects()
 end
 
 function SWEP:CalculateNextPrimaryFire()
-    if ( self.Primary.RPM ) then
-        return CurTime() + ( 60 / self.Primary.RPM )
+    local curTime = CurTime()
+    if ( self:Clip1() <= 0 ) then
+        return curTime + ( self.Primary.DelayEmpty or 0.1 )
     end
 
-    return CurTime() + self.Primary.Delay
+    if ( self.Primary.BurstCount > 0 ) then
+        return curTime + self.Primary.BurstDelay
+    end
+
+    if ( self.Primary.RPM ) then
+        return curTime + ( 60 / self.Primary.RPM )
+    end
+
+    return curTime + self.Primary.Delay
 end
 
 function SWEP:Shoot()
     if ( self:Clip1() <= 0 ) then
         self:EmitSound(self.Primary.SoundEmpty, 60, 100, 1, CHAN_WEAPON)
-        self:SetNextPrimaryFire(CurTime() + 1)
-        return
+        return false
     end
 
     self:ShootBullet(self.Primary.Damage, self.Primary.NumShots, self.Primary.Cone)
@@ -190,7 +196,7 @@ function SWEP:Shoot()
     self:TakePrimaryAmmo(1)
 
     local ply = self:GetOwner()
-    if ( CLIENT and IsValid(ply) ) then
+    if ( IsValid(ply) ) then
         local recoilAngle = Angle(-1, math.random(-1, 1), 0)
 
         if ( self:GetIronSights() ) then
@@ -205,13 +211,11 @@ function SWEP:Shoot()
             ply:SetEyeAngles(ply:EyeAngles() + recoilAngle * 0.75)
         end
     end
-
-    self:SetNextPrimaryFire(self:CalculateNextPrimaryFire())
 end
 
 function SWEP:PrimaryAttack()
-    if ( self.Winding.Enabled ) then return end
-    if ( !self:CanPrimaryAttack() ) then return end
+    if ( self.Winding.Enabled ) then return false end
+    if ( !self:CanPrimaryAttack() ) then return false end
 
     local prePrimaryAttack = self.PrePrimaryAttack
     if ( isfunction(prePrimaryAttack) ) then
@@ -221,13 +225,15 @@ function SWEP:PrimaryAttack()
     if ( self.Primary.BurstCount > 0 ) then
         if ( self:GetBurstCount() >= self.Primary.BurstCount ) then
             self:SetBurstCount(0)
-            self:SetNextPrimaryFire(CurTime() + self.Primary.BurstDelay)
+            self:SetNextPrimaryFire(self:CalculateNextPrimaryFire())
         else
             self:Shoot()
+            self:SetNextPrimaryFire(self:CalculateNextPrimaryFire())
             self:SetBurstCount(self:GetBurstCount() + 1)
         end
     else
         self:Shoot()
+        self:SetNextPrimaryFire(self:CalculateNextPrimaryFire())
     end
 
     if ( self.PostPrimaryAttack ) then

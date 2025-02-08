@@ -577,7 +577,6 @@ function SWEP:ThinkWinding()
 
     local holding = ply:KeyDown(IN_ATTACK)
     if ( holding and !self:GetWinding() and CurTime() > self:GetWindingCooldown() ) then
-        print("Start winding")
         self:SetWinding(true)
         self:SetWindingStart(CurTime())
 
@@ -590,7 +589,6 @@ function SWEP:ThinkWinding()
         end
     elseif ( holding and self:GetWinding() and CurTime() - self:GetWindingStart() >= self.Winding.Duration and CurTime() > self:GetWindingCooldown() ) then
         if ( !self:GetWindedUp() ) then
-            print("Winded up")
             self:SetWindedUp(true)
 
             if ( self.WindingSoundUp and self.WindingSoundUp:IsPlaying() ) then
@@ -599,7 +597,6 @@ function SWEP:ThinkWinding()
         else
             if ( self:CanPrimaryAttack() ) then
                 if ( self.Winding.MaxDuration and CurTime() - self:GetWindingStart() >= self.Winding.MaxDuration ) then
-                    print("Winding down forcefully")
                     self:SetWinding(false)
                     self:SetWindedUp(false)
                     self:SetWindingCooldown(CurTime() + self.Winding.Duration)
@@ -612,13 +609,12 @@ function SWEP:ThinkWinding()
                         self:EmitSound(self.Winding.SoundDown, self.Winding.SoundDownLevel or 60, self.Winding.SoundDownPitch or 100, self.Winding.SoundDownVolume or 1, self.Winding.SoundDownChannel or CHAN_ITEM)
                     end
                 end
-                print("Shooting")
+
                 self:Shoot()
             end
         end
     elseif ( !holding and self:GetWinding() ) then
         if ( self:GetWinding() ) then
-            print("Stop winding")
             self:SetWinding(false)
             self:SetWindedUp(false)
 
@@ -679,11 +675,14 @@ function SWEP:Deploy()
     self:SetWindedUp(false)
     self:SetWindingStart(0)
     self:SetWindingCooldown(0)
-    self:SetNextPrimaryFire(0)
-    self:SetNextSecondaryFire(0)
 
     self:PlayAnimation(self.DeployAnim or ACT_VM_DRAW)
     self:QueueIdle()
+
+    self:SetHoldType(self.HoldType)
+
+    self:SetNextPrimaryFire(CurTime() + 1)
+    self:SetNextSecondaryFire(CurTime() + 1)
 
     if ( self.PostDeploy ) then
         self:PostDeploy()
