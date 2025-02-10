@@ -142,6 +142,9 @@ function SWEP:Reload()
         self:SetClip1(self:Clip1() + ammoToTake)
         self:SetRunningWait(0)
 
+        self:SetNextPrimaryFire(CurTime() + 1)
+        self:SetNextSecondaryFire(CurTime() + 1)
+
         if ( self.PostReloadFinish ) then
             self:PostReloadFinish()
         end
