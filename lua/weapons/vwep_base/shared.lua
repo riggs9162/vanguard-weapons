@@ -283,6 +283,12 @@ SWEP.FireModes.Settings = {
     }
 }
 
+-- SWEP.DeployAnim = "draw"
+-- SWEP.EmptyAnim = "idle_empty"
+-- SWEP.EmptyAnimIronSights = "idle_empty"
+-- SWEP.IdleAnim = "idle"
+-- SWEP.IdleAnimIronSights = "idle"
+
 function SWEP:SetupDataTables()
     if ( self.PreSetupDataTables ) then
         self:PreSetupDataTables()
@@ -341,6 +347,9 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Float", 4, "WindingStart")
     self:NetworkVar("Float", 5, "WindingCooldown")
 
+    -- Pumping
+    self:NetworkVar("Bool", 7, "Pumping")
+
     if ( self.PostSetupDataTables ) then
         self:PostSetupDataTables()
     end
@@ -371,6 +380,7 @@ function SWEP:Initialize()
     self:SetWindedUp(false)
     self:SetWindingStart(0)
     self:SetWindingCooldown(0)
+    self:SetPumping(false)
     self:SetNextPrimaryFire(0)
     self:SetNextSecondaryFire(0)
 
@@ -433,9 +443,13 @@ end
 
 function SWEP:ThinkWalking()
     if ( !self.Walking or !self.Walking.Enabled ) then return end
+    if ( self:GetReloading() or self:GetCycling() ) then return end
 
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
+    if ( !ply:OnGround() ) then return end
+    if ( ply:WaterLevel() > 0 ) then return end
+    if ( ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_LADDER ) then return end
 
     local clip = self:Clip1()
     local empty = clip <= 0
@@ -502,9 +516,13 @@ end
 
 function SWEP:ThinkRunning()
     if ( !self.Running or !self.Running.Enabled ) then return end
+    if ( self:GetReloading() or self:GetCycling() ) then return end
 
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
+    if ( !ply:OnGround() ) then return end
+    if ( ply:WaterLevel() > 0 ) then return end
+    if ( ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_LADDER ) then return end
 
     local clip = self:Clip1()
     local empty = clip <= 0
@@ -675,6 +693,9 @@ function SWEP:Deploy()
     self:SetWindedUp(false)
     self:SetWindingStart(0)
     self:SetWindingCooldown(0)
+    self:SetPumping(false)
+    self:SetNextPrimaryFire(CurTime() + 1)
+    self:SetNextSecondaryFire(CurTime() + 1)
 
     self:PlayAnimation(self.DeployAnim or ACT_VM_DRAW)
     self:QueueIdle()
@@ -709,6 +730,7 @@ function SWEP:Holster()
     self:SetWindedUp(false)
     self:SetWindingStart(0)
     self:SetWindingCooldown(0)
+    self:SetPumping(false)
     self:SetNextPrimaryFire(0)
     self:SetNextSecondaryFire(0)
 

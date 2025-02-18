@@ -156,9 +156,17 @@ function SWEP:ShootEffects()
         timer.Simple(duration, function()
             if ( !IsValid(self) ) then return end
 
+            self:SetPumping(true)
+
             local _, pumpDuration = self:PlayAnimation(self:GetViewModelPumpActionAnimation(), self.PumpAction.PlaybackRate)
             self:QueueIdle()
             self:EmitSound(self.PumpAction.Sound, self.PumpAction.SoundLevel or 60, self.PumpAction.SoundPitch or 100, self.PumpAction.SoundVolume or 1, self.PumpAction.SoundChannel or CHAN_WEAPON)
+
+            timer.Simple(pumpDuration, function()
+                if ( !IsValid(self) ) then return end
+
+                self:SetPumping(false)
+            end)
         end)
     end
 

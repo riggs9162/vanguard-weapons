@@ -25,13 +25,13 @@ function SWEP:DrawWorldModel()
     pos, ang = vanguard.util:Translate(pos, ang, self.WorldModelOffset or Vector(), self.WorldModelOffsetAng or Angle())
 
     if ( !IsValid(WorldModel) ) then
-        WorldModel = ClientsideModel(self.WorldModel, RENDERGROUP_OTHER)
+        WorldModel = ClientsideModel(self.WorldModelFake or self.WorldModel, RENDERGROUP_OPAQUE)
         WorldModel:SetNoDraw(true)
 
         WorldModel.Owner = ply
     end
 
-    WorldModel:SetModel(self.WorldModel)
+    WorldModel:SetModel(self.WorldModelFake or self.WorldModel)
     WorldModel:SetPos(pos)
     WorldModel:SetAngles(ang)
     WorldModel:SetupBones()

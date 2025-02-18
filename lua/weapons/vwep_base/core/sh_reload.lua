@@ -4,6 +4,10 @@ function SWEP:CanReload()
 
     if ( self:GetReloading() ) then return false end
     if ( self:GetCycling() ) then return false end
+    if ( self:GetPumping() ) then return false end
+    if ( self:GetRunning() ) then return false end
+    if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
+    if ( self:GetNextSecondaryFire() > CurTime() ) then return false end
 
     if ( ply.IsWepRaised and !ply:IsWepRaised() ) then return false end
     if ( ply.IsWeaponRaised and !ply:IsWeaponRaised() ) then return false end
@@ -47,6 +51,7 @@ function SWEP:DoCyclingReload()
         
         if ( self.Cycling.SequenceExit ) then
             local _, duration = self:PlayAnimation(self.Cycling.SequenceExit, self.Cycling.PlaybackRate)
+            self:SetCyclingWait(CurTime() + duration + ( self.Cycling.Delay or 0 ))
             self:QueueIdle()
         end
 
@@ -59,7 +64,6 @@ function SWEP:DoCyclingReload()
 
             self:SetReloading(false)
             self:SetCycling(false)
-            self:SetRunningWait(0)
 
             if ( self.PostReloadFinish ) then
                 self:PostReloadFinish()
@@ -140,10 +144,9 @@ function SWEP:Reload()
         local ammoToTake = math.min(ammo, ply:GetAmmoCount(self.Primary.Ammo))
         ply:RemoveAmmo(ammoToTake, self.Primary.Ammo)
         self:SetClip1(self:Clip1() + ammoToTake)
-        self:SetRunningWait(0)
 
-        self:SetNextPrimaryFire(CurTime() + 1)
-        self:SetNextSecondaryFire(CurTime() + 1)
+        self:SetNextPrimaryFire(CurTime() + 0.1)
+        self:SetNextSecondaryFire(CurTime() + 0.1)
 
         if ( self.PostReloadFinish ) then
             self:PostReloadFinish()
