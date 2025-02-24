@@ -120,54 +120,54 @@ SWEP.Reloading.Events = {
 */
 
 -- Cycling settings
-SWEP.Cycling = {}
-SWEP.Cycling.Enabled = false -- Enable cycling
-SWEP.Cycling.Ammo = 1 -- The ammo to give when cycling
-SWEP.Cycling.SequenceEntry = nil -- The cycling entry animation
-SWEP.Cycling.Sequence = ACT_VM_RELOAD -- The cycling animation
-SWEP.Cycling.SequenceExit = nil -- The cycling exit animation
-SWEP.Cycling.SequenceIronSightsEntry = nil -- The cycling entry animation when iron sighting
-SWEP.Cycling.SequenceIronSights = ACT_VM_RELOAD -- The cycling animation when iron sighting
-SWEP.Cycling.SequenceIronSightsExit = nil -- The cycling exit animation when iron sighting
-SWEP.Cycling.GiveEntry = false -- Also give ammo when the cycling entry animation is finished
-SWEP.Cycling.PlaybackRate = 1 -- The playback rate of the cycling animation
-SWEP.Cycling.Sound = Sound("Weapon_Pistol.Reload") -- The cycling sound
-SWEP.Cycling.SoundLevel = 60 -- The cycling sound level, used for sound distance
-SWEP.Cycling.SoundPitch = 100 -- The cycling sound pitch
-SWEP.Cycling.SoundVolume = 1 -- The cycling sound volume
-SWEP.Cycling.SoundChannel = CHAN_ITEM -- The cycling sound channel
-SWEP.Cycling.Delay = 0.5 -- The delay between cycling
-SWEP.Cycling.Automatic = false -- Is the cycling automatic?
+-- SWEP.Cycling = {}
+-- SWEP.Cycling.Enabled = false -- Enable cycling
+-- SWEP.Cycling.Ammo = 1 -- The ammo to give when cycling
+-- SWEP.Cycling.SequenceEntry = nil -- The cycling entry animation
+-- SWEP.Cycling.Sequence = ACT_VM_RELOAD -- The cycling animation
+-- SWEP.Cycling.SequenceExit = nil -- The cycling exit animation
+-- SWEP.Cycling.SequenceIronSightsEntry = nil -- The cycling entry animation when iron sighting
+-- SWEP.Cycling.SequenceIronSights = ACT_VM_RELOAD -- The cycling animation when iron sighting
+-- SWEP.Cycling.SequenceIronSightsExit = nil -- The cycling exit animation when iron sighting
+-- SWEP.Cycling.GiveEntry = false -- Also give ammo when the cycling entry animation is finished
+-- SWEP.Cycling.PlaybackRate = 1 -- The playback rate of the cycling animation
+-- SWEP.Cycling.Sound = Sound("Weapon_Pistol.Reload") -- The cycling sound
+-- SWEP.Cycling.SoundLevel = 60 -- The cycling sound level, used for sound distance
+-- SWEP.Cycling.SoundPitch = 100 -- The cycling sound pitch
+-- SWEP.Cycling.SoundVolume = 1 -- The cycling sound volume
+-- SWEP.Cycling.SoundChannel = CHAN_ITEM -- The cycling sound channel
+-- SWEP.Cycling.Delay = 0.5 -- The delay between cycling
+-- SWEP.Cycling.Automatic = false -- Is the cycling automatic?
 
 -- Pump action settings
-SWEP.PumpAction = {}
-SWEP.PumpAction.Enabled = false -- Enable pump action
-SWEP.PumpAction.Sequence = ACT_SHOTGUN_PUMP -- The pump action animation
-SWEP.PumpAction.SequenceIronSights = ACT_SHOTGUN_PUMP -- The pump action animation when iron sighting
-SWEP.PumpAction.PlaybackRate = 1 -- The playback rate of the pump action animation
-SWEP.PumpAction.Sound = Sound("Weapon_Shotgun.Special1") -- The pump action sound
-SWEP.PumpAction.SoundLevel = 60 -- The pump action sound level, used for sound distance
-SWEP.PumpAction.SoundPitch = 100 -- The pump action sound pitch
-SWEP.PumpAction.SoundVolume = 1 -- The pump action sound volume
-SWEP.PumpAction.SoundChannel = CHAN_ITEM -- The pump action sound channel
+-- SWEP.PumpAction = {}
+-- SWEP.PumpAction.Enabled = false -- Enable pump action
+-- SWEP.PumpAction.Sequence = ACT_SHOTGUN_PUMP -- The pump action animation
+-- SWEP.PumpAction.SequenceIronSights = ACT_SHOTGUN_PUMP -- The pump action animation when iron sighting
+-- SWEP.PumpAction.PlaybackRate = 1 -- The playback rate of the pump action animation
+-- SWEP.PumpAction.Sound = Sound("Weapon_Shotgun.Special1") -- The pump action sound
+-- SWEP.PumpAction.SoundLevel = 60 -- The pump action sound level, used for sound distance
+-- SWEP.PumpAction.SoundPitch = 100 -- The pump action sound pitch
+-- SWEP.PumpAction.SoundVolume = 1 -- The pump action sound volume
+-- SWEP.PumpAction.SoundChannel = CHAN_ITEM -- The pump action sound channel
 
 -- Wind up settings, used for miniguns
-SWEP.Winding = {}
-SWEP.Winding.Enabled = false -- Enable wind up
-SWEP.Winding.Duration = 2 -- The time the owner has to hold the trigger to wind up
-SWEP.Winding.MaxDuration = 5 -- The maximum time the owner fire his weapon before it winds down forcefully
+-- SWEP.Winding = {}
+-- SWEP.Winding.Enabled = false -- Enable wind up
+-- SWEP.Winding.Duration = 2 -- The time the owner has to hold the trigger to wind up
+-- SWEP.Winding.MaxDuration = 5 -- The maximum time the owner fire his weapon before it winds down forcefully
 
-SWEP.Winding.SoundUp = Sound("Weapon_Minigun.WindUp") -- The sound that plays when the minigun is winding up
-SWEP.Winding.SoundUpLevel = 60 -- The sound level of the wind up sound
-SWEP.Winding.SoundUpPitch = 100 -- The sound pitch of the wind up sound
-SWEP.Winding.SoundUpVolume = 1 -- The sound volume of the wind up sound
-SWEP.Winding.SoundUpChannel = CHAN_ITEM -- The sound channel of the wind up sound
+-- SWEP.Winding.SoundUp = Sound("Weapon_Minigun.WindUp") -- The sound that plays when the minigun is winding up
+-- SWEP.Winding.SoundUpLevel = 60 -- The sound level of the wind up sound
+-- SWEP.Winding.SoundUpPitch = 100 -- The sound pitch of the wind up sound
+-- SWEP.Winding.SoundUpVolume = 1 -- The sound volume of the wind up sound
+-- SWEP.Winding.SoundUpChannel = CHAN_ITEM -- The sound channel of the wind up sound
 
-SWEP.Winding.SoundDown = Sound("Weapon_Minigun.WindDown") -- The sound that plays when the minigun is winding down
-SWEP.Winding.SoundDownLevel = 60 -- The sound level of the wind down sound
-SWEP.Winding.SoundDownPitch = 100 -- The sound pitch of the wind down sound
-SWEP.Winding.SoundDownVolume = 1 -- The sound volume of the wind down sound
-SWEP.Winding.SoundDownChannel = CHAN_ITEM -- The sound channel of the wind down sound
+-- SWEP.Winding.SoundDown = Sound("Weapon_Minigun.WindDown") -- The sound that plays when the minigun is winding down
+-- SWEP.Winding.SoundDownLevel = 60 -- The sound level of the wind down sound
+-- SWEP.Winding.SoundDownPitch = 100 -- The sound pitch of the wind down sound
+-- SWEP.Winding.SoundDownVolume = 1 -- The sound volume of the wind down sound
+-- SWEP.Winding.SoundDownChannel = CHAN_ITEM -- The sound channel of the wind down sound
 
 -- Viewmodel settings
 SWEP.ViewModel = "models/weapons/c_pistol.mdl" -- The model used in first-person view
@@ -182,10 +182,10 @@ SWEP.ViewModelDynamicLights = {
     --{Pos = Vector(0, 0, 0), Brightness = 1, Size = 1, Decay = 100, Color = Color(255, 255, 255, 255)} -- Example
 }
 
-SWEP.ViewModelMaterial = "" -- Viewmodel material
-SWEP.ViewModelColor = Color(255, 255, 255, 255) -- Viewmodel color
-SWEP.ViewModelRenderMode = RENDERMODE_NORMAL -- Viewmodel render mode
-SWEP.ViewModelRenderFX = kRenderFxNone -- Viewmodel render fx
+-- SWEP.ViewModelMaterial = "" -- Viewmodel material
+-- SWEP.ViewModelColor = Color(255, 255, 255, 255) -- Viewmodel color
+-- SWEP.ViewModelRenderMode = RENDERMODE_NORMAL -- Viewmodel render mode
+-- SWEP.ViewModelRenderFX = kRenderFxNone -- Viewmodel render fx
 
 -- Worldmodel settings
 SWEP.WorldModel = "models/weapons/w_pistol.mdl" -- The model used in third-person view
@@ -199,10 +199,10 @@ SWEP.WorldModelDynamicLights = {
     --{Pos = Vector(0, 0, 0), Brightness = 1, Size = 1, Decay = 100, Color = Color(255, 255, 255)} -- Example
 }
 
-SWEP.WorldModelMaterial = "" -- Worldmodel material
-SWEP.WorldModelColor = Color(255, 255, 255, 255) -- Worldmodel color
-SWEP.WorldModelRenderMode = RENDERMODE_NORMAL -- Worldmodel render mode
-SWEP.WorldModelRenderFX = kRenderFxNone -- Worldmodel render fx
+-- SWEP.WorldModelMaterial = "" -- Worldmodel material
+-- SWEP.WorldModelColor = Color(255, 255, 255, 255) -- Worldmodel color
+-- SWEP.WorldModelRenderMode = RENDERMODE_NORMAL -- Worldmodel render mode
+-- SWEP.WorldModelRenderFX = kRenderFxNone -- Worldmodel render fx
 
 -- Walking animation settings
 -- SWEP.Walking = {}
@@ -254,34 +254,34 @@ SWEP.Effects.MuzzleFlashFlags = 1 -- Muzzle flash flags
 SWEP.Effects.MuzzleFlashScale = 1 -- Muzzle flash scale
 SWEP.Effects.MuzzleFlashAttachment = "muzzle" -- Muzzle flash attachment
 
-SWEP.Effects.TracerCustom = false -- Wether or not we are using lua based tracers
-SWEP.Effects.TracerEffect = "Tracer" -- Tracer effect
-SWEP.Effects.TracerOffset = Vector(0, 0, 0) -- Tracer offset from the world model, only works with lua based tracers
+-- SWEP.Effects.TracerCustom = false -- Wether or not we are using lua based tracers
+-- SWEP.Effects.TracerEffect = "Tracer" -- Tracer effect
+-- SWEP.Effects.TracerOffset = Vector(0, 0, 0) -- Tracer offset from the world model, only works with lua based tracers
 
-SWEP.FireModes = {}
-SWEP.FireModes.Enabled = false -- Enable fire modes
-SWEP.FireModes.Sound = Sound("buttons/lever7.wav") -- The fire mode switch sound
-SWEP.FireModes.SoundLevel = 60 -- The fire mode switch sound level, used for sound distance
-SWEP.FireModes.SoundPitch = 140 -- The fire mode switch sound pitch
-SWEP.FireModes.SoundVolume = 1 -- The fire mode switch sound volume
-SWEP.FireModes.SoundChannel = CHAN_ITEM -- The fire mode switch sound channel
-SWEP.FireModes.SoundDelay = 0.5 -- The fire mode switch sound delay
-SWEP.FireModes.Delay = 0.5 -- The fire mode switch delay
-SWEP.FireModes.List = {"auto", "burst", "single"}
-SWEP.FireModes.Settings = {
-    auto = {
-        Automatic = true,
-        BurstCount = 0
-    },
-    burst = {
-        Automatic = true,
-        BurstCount = 3
-    },
-    single = {
-        Automatic = false,
-        BurstCount = 0
-    }
-}
+-- SWEP.FireModes = {}
+-- SWEP.FireModes.Enabled = false -- Enable fire modes
+-- SWEP.FireModes.Sound = Sound("buttons/lever7.wav") -- The fire mode switch sound
+-- SWEP.FireModes.SoundLevel = 60 -- The fire mode switch sound level, used for sound distance
+-- SWEP.FireModes.SoundPitch = 140 -- The fire mode switch sound pitch
+-- SWEP.FireModes.SoundVolume = 1 -- The fire mode switch sound volume
+-- SWEP.FireModes.SoundChannel = CHAN_ITEM -- The fire mode switch sound channel
+-- SWEP.FireModes.SoundDelay = 0.5 -- The fire mode switch sound delay
+-- SWEP.FireModes.Delay = 0.5 -- The fire mode switch delay
+-- SWEP.FireModes.List = {"auto", "burst", "single"}
+-- SWEP.FireModes.Settings = {
+--     auto = {
+--         Automatic = true,
+--         BurstCount = 0
+--     },
+--     burst = {
+--         Automatic = true,
+--         BurstCount = 3
+--     },
+--     single = {
+--         Automatic = false,
+--         BurstCount = 0
+--     }
+-- }
 
 -- SWEP.DeployAnim = "draw"
 -- SWEP.EmptyAnim = "idle_empty"
@@ -429,9 +429,9 @@ function SWEP:ThinkIdle()
 
         local clip = self:Clip1()
         local animIdle = self.IdleAnim or ACT_VM_IDLE
-        local animEmpty = self.EmptyAnim or ACT_VM_IDLE_EMPTY
-        local animIdleIronSights = self.IdleAnimIronSights or ACT_VM_IDLE
-        local animEmptyIronSights = self.EmptyAnimIronSights or ACT_VM_IDLE_EMPTY
+        local animEmpty = self.EmptyAnim
+        local animIdleIronSights = self.IdleAnimIronSights
+        local animEmptyIronSights = self.EmptyAnimIronSights
         local anim = clip > 0 and animIdle or animEmpty
         if ( self:GetIronSights() ) then
             anim = clip > 0 and animIdleIronSights or animEmptyIronSights
