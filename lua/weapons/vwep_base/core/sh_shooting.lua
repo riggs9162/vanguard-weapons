@@ -222,7 +222,7 @@ function SWEP:Shoot()
 end
 
 function SWEP:PrimaryAttack()
-    if ( self.Winding.Enabled ) then return false end
+    if ( self.Winding and self.Winding.Enabled ) then return false end
     if ( !self:CanPrimaryAttack() ) then return false end
 
     local prePrimaryAttack = self.PrePrimaryAttack

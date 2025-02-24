@@ -1,6 +1,6 @@
 local switchCooldown = 0
 function SWEP:ThinkFireModes()
-    if ( !self.FireModes.Enabled ) then return end
+    if ( !self.FireModes or !self.FireModes.Enabled ) then return end
 
     if ( self.PreThinkFireModes ) then
         self:PreThinkFireModes()
@@ -31,7 +31,7 @@ function SWEP:ThinkFireModes()
 end
 
 function SWEP:ToggleFireMode()
-    if ( !self.FireModes.Enabled ) then return end
+    if ( !self.FireModes or !self.FireModes.Enabled ) then return end
 
     if ( self.PreToggleFireMode ) then
         self:PreToggleFireMode()
