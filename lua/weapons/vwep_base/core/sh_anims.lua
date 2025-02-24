@@ -2,8 +2,16 @@ function SWEP:PlayAnimation(anim, rate)
     local vm = self:GetOwner():GetViewModel()
     if ( !IsValid(vm) ) then return end
 
-    local sequence = isstring(anim) and vm:LookupSequence(anim) or anim
-    if ( sequence == -1 ) then return end
+    local sequence = anim
+    if ( isstring(anim) ) then
+        sequence = vm:LookupSequence(anim)
+    elseif ( isfunction(anim) ) then
+        sequence = anim(self)
+    elseif ( istable(anim) ) then
+        sequence = anim[math.random(#anim)]
+    end
+
+    if ( !sequence or sequence == -1 ) then return end
 
     vm:SendViewModelMatchingSequence(sequence)
     vm:SetPlaybackRate(rate or 1)
@@ -86,4 +94,49 @@ function SWEP:GetViewModelReloadAnimation(bIronsighted)
     end
 
     return reloadSequence
+end
+
+function SWEP:GetViewModelCyclingEntryAnimation()
+    local entrySequence = self.Cycling.SequenceEntry or ACT_VM_RELOAD
+    if ( self:GetIronSights() ) then
+        entrySequence = self.Cycling.SequenceEntryIronSights or entrySequence
+    end
+
+    if ( isfunction(entrySequence) ) then
+        entrySequence = entrySequence(self)
+    elseif ( istable(entrySequence) ) then
+        entrySequence = entrySequence[math.random(#entrySequence)]
+    end
+
+    return entrySequence
+end
+
+function SWEP:GetViewModelCyclingExitAnimation()
+    local exitSequence = self.Cycling.SequenceExit or ACT_VM_RELOAD
+    if ( self:GetIronSights() ) then
+        exitSequence = self.Cycling.SequenceExitIronSights or exitSequence
+    end
+
+    if ( isfunction(exitSequence) ) then
+        exitSequence = exitSequence(self)
+    elseif ( istable(exitSequence) ) then
+        exitSequence = exitSequence[math.random(#exitSequence)]
+    end
+
+    return exitSequence
+end
+
+function SWEP:GetViewModelCyclingAnimation()
+    local idleSequence = self.Cycling.Sequence or ACT_VM_IDLE
+    if ( self:GetIronSights() ) then
+        idleSequence = self.Cycling.SequenceIronSights or idleSequence
+    end
+
+    if ( isfunction(idleSequence) ) then
+        idleSequence = idleSequence(self)
+    elseif ( istable(idleSequence) ) then
+        idleSequence = idleSequence[math.random(#idleSequence)]
+    end
+
+    return idleSequence
 end

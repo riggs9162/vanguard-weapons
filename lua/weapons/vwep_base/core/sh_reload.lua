@@ -19,8 +19,12 @@ function SWEP:DoCyclingReload()
     local ply = self:GetOwner()
     if ( !IsValid(ply) ) then return end
 
-    if ( !self:GetReloading() and self.Cycling.SequenceEntry ) then
-        local _, duration = self:PlayAnimation(self.Cycling.SequenceEntry, self.Cycling.PlaybackRate)
+    local sequenceEntry = self:GetViewModelCyclingEntryAnimation()
+    local sequence = self:GetViewModelCyclingAnimation()
+    local sequenceExit = self:GetViewModelCyclingExitAnimation()
+
+    if ( !self:GetReloading() and sequenceEntry ) then
+        local _, duration = self:PlayAnimation(sequenceEntry, self.Cycling.PlaybackRate)
         self:SetCyclingWait(CurTime() + duration + ( self.Cycling.Delay or 0 ))
 
         ply:SetAnimation(PLAYER_RELOAD)
@@ -35,7 +39,7 @@ function SWEP:DoCyclingReload()
         self:SetCycleWait(CurTime())
         self:SetReloading(true)
     elseif ( self:Clip1() < self.Primary.ClipSize ) then
-        local _, duration = self:PlayAnimation(self.Cycling.Sequence, self.Cycling.PlaybackRate)
+        local _, duration = self:PlayAnimation(sequence, self.Cycling.PlaybackRate)
         self:SetCyclingWait(CurTime() + duration + ( self.Cycling.Delay or 0 ))
 
         if ( CLIENT ) then
@@ -49,8 +53,8 @@ function SWEP:DoCyclingReload()
         self:SetReloading(false)
         self:SetCycling(false)
         
-        if ( self.Cycling.SequenceExit ) then
-            local _, duration = self:PlayAnimation(self.Cycling.SequenceExit, self.Cycling.PlaybackRate)
+        if ( sequenceExit ) then
+            local _, duration = self:PlayAnimation(sequenceExit, self.Cycling.PlaybackRate)
             self:SetCyclingWait(CurTime() + duration + ( self.Cycling.Delay or 0 ))
             self:QueueIdle()
         end
