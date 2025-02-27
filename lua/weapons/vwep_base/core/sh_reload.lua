@@ -89,7 +89,7 @@ function SWEP:Reload()
     local bIronsighted = self:GetIronSights()
     self:SetIronSights(false)
 
-    if ( self.Cycling.Enabled ) then
+    if ( self.Cycling and self.Cycling.Enabled ) then
         if ( self.Cycling.Automatic ) then
             self:SetCycling(true)
             self:SetCyclingWait(CurTime() + ( self.Cycling.Delay or 0 ))
