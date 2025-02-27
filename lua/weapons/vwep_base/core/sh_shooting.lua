@@ -152,7 +152,7 @@ function SWEP:ShootEffects()
 
     ply:SetAnimation(PLAYER_ATTACK1)
 
-    if ( self.PumpAction.Enabled ) then
+    if ( self.PumpAction and self.PumpAction.Enabled ) then
         timer.Simple(duration, function()
             if ( !IsValid(self) ) then return end
 
