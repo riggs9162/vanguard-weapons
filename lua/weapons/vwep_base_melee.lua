@@ -118,9 +118,8 @@ function SWEP:PrimaryAttack()
     self:ClubEffects()
 
     local ply = self:GetOwner()
-    if ( IsValid(ply) and IsFirstTimePredicted() ) then
+    if ( IsValid(ply) ) then
         local recoilAngle = self.Primary.RecoilAngle or Angle(-self.Primary.Recoil, math.Rand(-self.Primary.Recoil, self.Primary.Recoil), 0)
-        ply:SetEyeAngles(ply:EyeAngles() + Angle(-self.Primary.Recoil, 0, 0))
         ply:ViewPunch(recoilAngle)
     end
 
@@ -145,7 +144,6 @@ function SWEP:ClubAttack()
 
     timer.Create("VWEP.ClubAttack." .. self:EntIndex() .. "." .. CurTime(), self.Primary.Delay, 1, function()
         if ( !IsValid(self) or !IsValid(ply) ) then return end
-
 
         trace = {}
         trace.start = ply:GetShootPos()
