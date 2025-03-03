@@ -196,41 +196,41 @@ function SWEP:ClubEffects()
 
     ply:SetAnimation(PLAYER_ATTACK1)
 
-    timer.Create("VWEP.ClubEffects." .. self:EntIndex() .. "." .. CurTime(), self.Primary.Delay, 1, function()
-        if ( !IsValid(self) or !IsValid(ply) ) then return end
+    if ( SERVER ) then
+        timer.Create("VWEP.ClubEffects." .. self:EntIndex() .. "." .. CurTime(), self.Primary.Delay, 1, function()
+            if ( !IsValid(self) or !IsValid(ply) ) then return end
 
-        local trace = {}
-        trace.start = ply:GetShootPos()
-        trace.endpos = trace.start + ply:GetAimVector() * self.Primary.Range
-        trace.filter = ply
-        trace.mask = MASK_SHOT_HULL
-        trace.mins = Vector(-self.Primary.HullSize, -self.Primary.HullSize, -self.Primary.HullSize)
-        trace.maxs = Vector(self.Primary.HullSize, self.Primary.HullSize, self.Primary.HullSize)
-        trace = util.TraceHull(trace)
+            local trace = {}
+            trace.start = ply:GetShootPos()
+            trace.endpos = trace.start + ply:GetAimVector() * self.Primary.Range
+            trace.filter = ply
+            trace.mask = MASK_SHOT_HULL
+            trace.mins = Vector(-self.Primary.HullSize, -self.Primary.HullSize, -self.Primary.HullSize)
+            trace.maxs = Vector(self.Primary.HullSize, self.Primary.HullSize, self.Primary.HullSize)
+            trace = util.TraceHull(trace)
 
-        if ( trace.Hit ) then
-            local hit = trace.Entity
-            if ( CLIENT and IsValid(hit) ) then
-                if ( self.Primary.SoundHit ) then
-                    local snd = self.Primary.SoundHit
-                    local vol = self.Primary.SoundHitVolume
-                    local pitch = self.Primary.SoundHitPitch
-                    local channel = self.Primary.SoundHitChannel
+            if ( trace.Hit ) then
+                local hit = trace.Entity
+                if ( IsValid(hit) ) then
+                    if ( self.Primary.SoundHit ) then
+                        local snd = self.Primary.SoundHit
+                        local vol = self.Primary.SoundHitVolume
+                        local pitch = self.Primary.SoundHitPitch
+                        local channel = self.Primary.SoundHitChannel
 
-                    hit:EmitSound(snd, self.Primary.SoundHitLevel, pitch, vol, channel)
+                        hit:EmitSound(snd, self.Primary.SoundHitLevel, pitch, vol, channel)
+                    end
+                else
+                    if ( self.Primary.SoundHitWorld ) then
+                        local snd = self.Primary.SoundHitWorld
+                        local vol = self.Primary.SoundHitVolume
+                        local pitch = self.Primary.SoundHitPitch
+                        local channel = self.Primary.SoundHitChannel
+
+                        ply:EmitSound(snd, self.Primary.SoundHitLevel, pitch, vol, channel)
+                    end
                 end
-            else
-                if ( self.Primary.SoundHitWorld ) then
-                    local snd = self.Primary.SoundHitWorld
-                    local vol = self.Primary.SoundHitVolume
-                    local pitch = self.Primary.SoundHitPitch
-                    local channel = self.Primary.SoundHitChannel
 
-                    ply:EmitSound(snd, self.Primary.SoundHitLevel, pitch, vol, channel)
-                end
-            end
-
-            if ( SERVER ) then
                 local trace = {}
                 trace.start = ply:GetShootPos()
                 trace.endpos = trace.start + ply:GetAimVector() * 8192
@@ -253,9 +253,7 @@ function SWEP:ClubEffects()
                 end
 
                 debugoverlay.Line(trace.StartPos, trace.HitPos, 5, Color(255, 0, 0), true)
-            end
-        else
-            if ( CLIENT and self.Primary.SoundHitMiss ) then
+            elseif ( self.Primary.SoundHitMiss ) then
                 local snd = self.Primary.SoundHitMiss
                 local vol = self.Primary.SoundHitVolume
                 local pitch = self.Primary.SoundHitPitch
@@ -263,8 +261,8 @@ function SWEP:ClubEffects()
 
                 ply:EmitSound(snd, self.Primary.SoundHitLevel, pitch, vol, channel)
             end
-        end
-    end)
+        end)
+    end
 
     if ( self.PostClubEffects ) then
         self:PostClubEffects()
