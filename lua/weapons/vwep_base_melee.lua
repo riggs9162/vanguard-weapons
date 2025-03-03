@@ -110,7 +110,7 @@ function SWEP:PrimaryAttack()
         if ( prePrimaryAttack(self) == false ) then return end
     end
 
-    if ( self.Primary.Sound ) then
+    if ( CLIENT and self.Primary.Sound ) then
         self:EmitSound(self.Primary.Sound, self.Primary.SoundLevel, self.Primary.SoundPitch, self.Primary.SoundVolume, self.Primary.SoundChannel)
     end
 
@@ -210,7 +210,7 @@ function SWEP:ClubEffects()
 
         if ( trace.Hit ) then
             local hit = trace.Entity
-            if ( IsValid(hit) ) then
+            if ( CLIENT and IsValid(hit) ) then
                 if ( self.Primary.SoundHit ) then
                     local snd = self.Primary.SoundHit
                     local vol = self.Primary.SoundHitVolume
@@ -255,7 +255,7 @@ function SWEP:ClubEffects()
                 debugoverlay.Line(trace.StartPos, trace.HitPos, 5, Color(255, 0, 0), true)
             end
         else
-            if ( self.Primary.SoundHitMiss ) then
+            if ( CLIENT and self.Primary.SoundHitMiss ) then
                 local snd = self.Primary.SoundHitMiss
                 local vol = self.Primary.SoundHitVolume
                 local pitch = self.Primary.SoundHitPitch
