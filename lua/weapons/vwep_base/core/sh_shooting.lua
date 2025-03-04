@@ -177,8 +177,8 @@ end
 
 function SWEP:CalculateNextPrimaryFire()
     local curTime = CurTime()
-    if ( self:Clip1() <= 0 ) then
-        return curTime + ( self.Primary.DelayEmpty or 0.1 )
+    if ( self.Primary.DelayEmpty and self:Clip1() <= 0 ) then
+        return curTime + self.Primary.DelayEmpty
     end
 
     if ( self.Primary.BurstCount > 0 ) then
