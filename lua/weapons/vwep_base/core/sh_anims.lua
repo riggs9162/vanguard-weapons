@@ -43,8 +43,8 @@ end
 
 function SWEP:GetViewModelShootAnimation()
     local shootSequence = self.Primary.Sequence or ACT_VM_PRIMARYATTACK
-    if ( self:GetIronSights() ) then
-        shootSequence = self.Primary.SequenceIronSights or shootSequence
+    if ( self.Primary.SequenceIronSights and self:GetIronSights() ) then
+        shootSequence = self.Primary.SequenceIronSights
     end
 
     if ( isfunction(shootSequence) ) then
@@ -58,8 +58,8 @@ end
 
 function SWEP:GetViewModelPumpActionAnimation()
     local pumpSequence = self.PumpAction.Sequence or ACT_SHOTGUN_PUMP
-    if ( self:GetIronSights() ) then
-        pumpSequence = self.PumpAction.SequenceIronSights or pumpSequence
+    if ( self.PumpAction.SequenceIronSights and self:GetIronSights() ) then
+        pumpSequence = pumpSequence
     end
 
     if ( isfunction(pumpSequence) ) then
