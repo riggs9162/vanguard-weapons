@@ -774,9 +774,15 @@ function SWEP:Holster(targetWeapon)
 
     -- Don't ask me how I got this to work, but it does
     -- Holstering is a mess, so don't touch it unless you know what you're doing
-    print(self.HolsterAnim, self:GetHolstering(), self:GetRaised())
     if ( self.HolsterAnim and !self:GetHolstering() and self:GetRaised() ) then
         local _, duration = self:PlayAnimation(self.HolsterAnim)
+
+        -- When loading back in, sometimes it doesn't get the duration of the animation
+        -- which causes the timer to fail.
+        if ( !duration ) then
+            duration = self:SequenceDuration(self.HolsterAnim) / self:GetPlaybackRate()
+        end
+
         self:SetHolstering(true)
 
         timer.Simple(duration, function()
