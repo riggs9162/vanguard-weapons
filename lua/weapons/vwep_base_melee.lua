@@ -117,10 +117,10 @@ function SWEP:PrimaryAttack()
     self:ClubAttack()
     self:ClubEffects()
 
-    local ply = self:GetOwner()
-    if ( IsValid(ply) ) then
+    local client = self:GetOwner()
+    if ( IsValid(client) ) then
         local recoilAngle = self.Primary.RecoilAngle or Angle(-self.Primary.Recoil, math.Rand(-self.Primary.Recoil, self.Primary.Recoil), 0)
-        ply:ViewPunch(recoilAngle)
+        client:ViewPunch(recoilAngle)
     end
 
     self:SetNextPrimaryFire(CurTime() + self.Primary.NextSwing)
@@ -135,27 +135,27 @@ function SWEP:ClubAttack()
         self:PreClubAttack()
     end
 
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
     local trace = {}
     local hit
     local dmg
 
     timer.Create("VWEP.ClubAttack." .. self:EntIndex() .. "." .. CurTime(), self.Primary.Delay, 1, function()
-        if ( !IsValid(self) or !IsValid(ply) ) then return end
+        if ( !IsValid(self) or !IsValid(client) ) then return end
 
         trace = {}
-        trace.start = ply:GetShootPos()
-        trace.endpos = trace.start + ply:GetAimVector() * self.Primary.Range
-        trace.filter = ply
+        trace.start = client:GetShootPos()
+        trace.endpos = trace.start + client:GetAimVector() * self.Primary.Range
+        trace.filter = client
         trace.mask = MASK_SHOT_HULL
         trace.mins = Vector(-self.Primary.HullSize, -self.Primary.HullSize, -self.Primary.HullSize)
         trace.maxs = Vector(self.Primary.HullSize, self.Primary.HullSize, self.Primary.HullSize)
         
-        ply:LagCompensation(true)
+        client:LagCompensation(true)
         trace = util.TraceHull(trace)
-        ply:LagCompensation(false)
+        client:LagCompensation(false)
 
         if ( trace.Hit ) then
             hit = trace.Entity
@@ -163,12 +163,12 @@ function SWEP:ClubAttack()
             if ( SERVER ) then
                 if ( IsValid(hit) ) then
                     dmg = DamageInfo()
-                    dmg:SetAttacker(ply)
+                    dmg:SetAttacker(client)
                     dmg:SetInflictor(self)
                     dmg:SetDamage(self.Primary.Damage)
                     dmg:SetDamageType(DMG_BULLET)
                     dmg:SetDamagePosition(trace.HitPos)
-                    dmg:SetDamageForce(ply:GetAimVector() * 10000)
+                    dmg:SetDamageForce(client:GetAimVector() * 10000)
 
                     hit:TakeDamageInfo(dmg)
                 end
@@ -186,22 +186,22 @@ function SWEP:ClubEffects()
         self:PreClubEffects()
     end
 
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
     self:PlayAnimation(self:GetViewModelShootAnimation(), self.Primary.PlaybackRate)
     self:QueueIdle()
 
-    ply:SetAnimation(PLAYER_ATTACK1)
+    client:SetAnimation(PLAYER_ATTACK1)
 
     if ( SERVER ) then
         timer.Create("VWEP.ClubEffects." .. self:EntIndex() .. "." .. CurTime(), self.Primary.Delay, 1, function()
-            if ( !IsValid(self) or !IsValid(ply) ) then return end
+            if ( !IsValid(self) or !IsValid(client) ) then return end
 
             local trace = {}
-            trace.start = ply:GetShootPos()
-            trace.endpos = trace.start + ply:GetAimVector() * self.Primary.Range
-            trace.filter = ply
+            trace.start = client:GetShootPos()
+            trace.endpos = trace.start + client:GetAimVector() * self.Primary.Range
+            trace.filter = client
             trace.mask = MASK_SHOT_HULL
             trace.mins = Vector(-self.Primary.HullSize, -self.Primary.HullSize, -self.Primary.HullSize)
             trace.maxs = Vector(self.Primary.HullSize, self.Primary.HullSize, self.Primary.HullSize)
@@ -225,29 +225,29 @@ function SWEP:ClubEffects()
                         local pitch = self.Primary.SoundHitPitch
                         local channel = self.Primary.SoundHitChannel
 
-                        ply:EmitSound(snd, self.Primary.SoundHitLevel, pitch, vol, channel)
+                        client:EmitSound(snd, self.Primary.SoundHitLevel, pitch, vol, channel)
                     end
                 end
 
                 local trace = {}
-                trace.start = ply:GetShootPos()
-                trace.endpos = trace.start + ply:GetAimVector() * 8192
-                trace.filter = ply
+                trace.start = client:GetShootPos()
+                trace.endpos = trace.start + client:GetAimVector() * 8192
+                trace.filter = client
                 trace.mask = MASK_SHOT
                 trace = util.TraceLine(trace)
 
                 if ( trace.HitPos:Distance(trace.StartPos) < self.Primary.Range ) then
                     local bullet = {}
                     bullet.Num = 1
-                    bullet.Src = ply:GetShootPos()
-                    bullet.Dir = ply:GetAimVector()
+                    bullet.Src = client:GetShootPos()
+                    bullet.Dir = client:GetAimVector()
                     bullet.Spread = Vector(0, 0, 0)
                     bullet.Tracer = 0
                     bullet.Force = 1
                     bullet.Damage = 0
-                    bullet.Attacker = ply
+                    bullet.Attacker = client
 
-                    ply:FireBullets(bullet)
+                    client:FireBullets(bullet)
                 end
 
                 debugoverlay.Line(trace.StartPos, trace.HitPos, 5, Color(255, 0, 0), true)
@@ -257,7 +257,7 @@ function SWEP:ClubEffects()
                 local pitch = self.Primary.SoundHitPitch
                 local channel = self.Primary.SoundHitChannel
 
-                ply:EmitSound(snd, self.Primary.SoundHitLevel, pitch, vol, channel)
+                client:EmitSound(snd, self.Primary.SoundHitLevel, pitch, vol, channel)
             end
         end)
     end
@@ -314,11 +314,11 @@ function SWEP:CanPrimaryAttack()
     if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
 
     if ( self.Primary.CanMove ) then
-        local ply = self:GetOwner()
-        if ( !IsValid(ply) ) then return false end
+        local client = self:GetOwner()
+        if ( !IsValid(client) ) then return false end
 
-        local runSpeed = ply:GetRunSpeed()
-        local vel = ply:GetVelocity():Length2D() / runSpeed
+        local runSpeed = client:GetRunSpeed()
+        local vel = client:GetVelocity():Length2D() / runSpeed
         vel = math.Round(vel, 2)
         vel = math.Clamp(vel, 0, 1)
 
@@ -328,10 +328,10 @@ function SWEP:CanPrimaryAttack()
     end
 
     if ( self.CanPrimaryAttackOverride ) then
-        local ply = self:GetOwner()
-        if ( !IsValid(ply) ) then return false end
+        local client = self:GetOwner()
+        if ( !IsValid(client) ) then return false end
 
-        return self:CanPrimaryAttackOverride(ply)
+        return self:CanPrimaryAttackOverride(client)
     end
 
     return true
@@ -341,10 +341,10 @@ function SWEP:CanSecondaryAttack()
     if ( self:GetNextSecondaryFire() > CurTime() ) then return false end
 
     if ( self.CanSecondaryAttackOverride ) then
-        local ply = self:GetOwner()
-        if ( !IsValid(ply) ) then return false end
+        local client = self:GetOwner()
+        if ( !IsValid(client) ) then return false end
 
-        return self:CanSecondaryAttackOverride(ply)
+        return self:CanSecondaryAttackOverride(client)
     end
 
     return true
@@ -370,14 +370,14 @@ end
 function SWEP:ThinkWalking()
     if ( CLIENT or !self.Walking or !self.Walking.Enabled ) then return end
 
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
     local sequenceEnter = self.Walking.SequenceEnter
     local sequenceLoop = self.Walking.SequenceLoop
     local sequenceExit = self.Walking.SequenceExit
 
-    local walking = !ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
+    local walking = !client:KeyDown(IN_SPEED) and client:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
     if ( walking and !self:GetWalking() ) then
         self:SetWalking(true)
 
@@ -410,14 +410,14 @@ end
 function SWEP:ThinkRunning()
     if ( CLIENT or !self.Running or !self.Running.Enabled ) then return end
 
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
     local sequenceEnter = self.Running.SequenceEnter
     local sequenceLoop = self.Running.SequenceLoop
     local sequenceExit = self.Running.SequenceExit
 
-    local running = ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
+    local running = client:KeyDown(IN_SPEED) and client:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
     if ( running and !self:GetRunning() ) then
         self:SetRunning(true)
 
@@ -448,8 +448,8 @@ function SWEP:ThinkRunning()
 end
 
 function SWEP:Think()
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
     self:ThinkIdle()
     self:ThinkWalking()

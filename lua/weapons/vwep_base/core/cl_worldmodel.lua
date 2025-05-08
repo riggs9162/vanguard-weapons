@@ -8,13 +8,13 @@ end
 
 local WorldModel
 function SWEP:DrawWorldModel()
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
-    local bone = ply:LookupBone(self.WorldModelBone or "ValveBiped.Bip01_R_Hand")
+    local bone = client:LookupBone(self.WorldModelBone or "ValveBiped.Bip01_R_Hand")
     if ( !bone ) then return end
 
-    local matrix = ply:GetBoneMatrix(bone)
+    local matrix = client:GetBoneMatrix(bone)
     if ( !matrix ) then return end
 
     if ( self.PreDrawWorldModel ) then
@@ -28,7 +28,7 @@ function SWEP:DrawWorldModel()
         WorldModel = ClientsideModel(self.WorldModelFake or self.WorldModel, RENDERGROUP_OPAQUE)
         WorldModel:SetNoDraw(true)
 
-        WorldModel.Owner = ply
+        WorldModel.Owner = client
     end
 
     WorldModel:SetModel(self.WorldModelFake or self.WorldModel)

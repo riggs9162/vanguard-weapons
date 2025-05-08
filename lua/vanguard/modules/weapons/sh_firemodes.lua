@@ -1,8 +1,8 @@
 if ( CLIENT ) then
-    concommand.Add("vanguard_weapons_toggle_firemode", function(ply, cmd, args)
-        if ( !IsValid(ply) or !ply:IsPlayer() ) then return end
+    concommand.Add("vanguard_weapons_toggle_firemode", function(client, cmd, args)
+        if ( !IsValid(client) or !client:IsPlayer() ) then return end
 
-        local wep = ply:GetActiveWeapon()
+        local wep = client:GetActiveWeapon()
         if ( !IsValid(wep) or !wep.IsVWEP ) then return end
 
         wep:ToggleFireMode()
@@ -15,14 +15,14 @@ if ( CLIENT ) then
 else
     util.AddNetworkString("Vanguard.Weapons.ToggleFireMode")
 
-    net.Receive("Vanguard.Weapons.ToggleFireMode", function(len, ply)
-        if ( !IsValid(ply) or !ply:IsPlayer() ) then return end
+    net.Receive("Vanguard.Weapons.ToggleFireMode", function(len, client)
+        if ( !IsValid(client) or !client:IsPlayer() ) then return end
 
-        local wep = ply:GetActiveWeapon()
+        local wep = client:GetActiveWeapon()
         if ( !IsValid(wep) or !wep.IsVWEP ) then return end
 
         wep:ToggleFireMode()
 
-        vanguard.util:Message(ply, " has toggled the firemode of their weapon.")
+        vanguard.util:Message(client, " has toggled the firemode of their weapon.")
     end)
 end

@@ -31,10 +31,10 @@ function SWEP:AdjustMouseSensitivity()
 end
 
 function SWEP:EnabledDevMode()
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return false end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return false end
 
-    return ply:GetNW2Bool("SWEP.DevMode", false)
+    return client:GetNW2Bool("SWEP.DevMode", false)
 end
 
 function SWEP:DrawHUD()

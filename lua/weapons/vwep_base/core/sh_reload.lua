@@ -1,6 +1,6 @@
 function SWEP:CanReload()
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return false end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return false end
 
     if ( self:GetReloading() ) then return false end
     if ( self:GetCycling() ) then return false end
@@ -9,15 +9,15 @@ function SWEP:CanReload()
     if ( self:GetNextPrimaryFire() > CurTime() ) then return false end
     if ( self:GetNextSecondaryFire() > CurTime() ) then return false end
 
-    if ( ply.IsWepRaised and !ply:IsWepRaised() ) then return false end
-    if ( ply.IsWeaponRaised and !ply:IsWeaponRaised() ) then return false end
+    if ( client.IsWepRaised and !client:IsWepRaised() ) then return false end
+    if ( client.IsWeaponRaised and !client:IsWeaponRaised() ) then return false end
 
     return self:Clip1() < self.Primary.ClipSize and self:GetOwner():GetAmmoCount(self.Primary.Ammo) > 0
 end
 
 function SWEP:DoCyclingReload()
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
     local sequenceEntry = self:GetViewModelCyclingEntryAnimation()
     local sequence = self:GetViewModelCyclingAnimation()
@@ -27,10 +27,10 @@ function SWEP:DoCyclingReload()
         local _, duration = self:PlayAnimation(sequenceEntry, self.Cycling.PlaybackRate)
         self:SetCyclingWait(CurTime() + duration + ( self.Cycling.Delay or 0 ))
 
-        ply:SetAnimation(PLAYER_RELOAD)
+        client:SetAnimation(PLAYER_RELOAD)
 
         if ( self.Cycling.GiveEntry ) then
-            ply:RemoveAmmo(1, self.Primary.Ammo)
+            client:RemoveAmmo(1, self.Primary.Ammo)
             self:SetClip1(self:Clip1() + 1)
         end
 
@@ -47,7 +47,7 @@ function SWEP:DoCyclingReload()
             self:EmitSound(cycleSound, cycleSoundLevel or 60, cycleSoundPitch or 100, cycleSoundVolume or 1, cycleSoundChannel or CHAN_ITEM)
         end
 
-        ply:RemoveAmmo(1, self.Primary.Ammo)
+        client:RemoveAmmo(1, self.Primary.Ammo)
         self:SetClip1(self:Clip1() + 1)
     else
         self:SetReloading(false)
@@ -79,8 +79,8 @@ end
 function SWEP:Reload()
     if ( !self:CanReload() ) then return end
 
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
     if ( self.PreReload ) then
         self:PreReload()
@@ -104,7 +104,7 @@ function SWEP:Reload()
 
     local clip = self:Clip1()
     local vmReload = self:GetViewModelReloadAnimation(bIronsighted)
-    local vm = ply:GetViewModel()
+    local vm = client:GetViewModel()
     local _, duration = self:PlayAnimation(vmReload, clip <= 0 and self.Reloading.PlaybackRateEmpty or self.Reloading.PlaybackRate)
     self:QueueIdle()
 
@@ -118,18 +118,18 @@ function SWEP:Reload()
             end
 
             timer.Simple(time, function()
-                if ( !IsValid(self) or !IsValid(ply) ) then return end
+                if ( !IsValid(self) or !IsValid(client) ) then return end
 
                 local func = data.Function
                 if ( func ) then
-                    func(self, ply)
+                    func(self, client)
                 end
             end)
         end
     end
 
     if ( CLIENT ) then
-        ply:SetAnimation(PLAYER_RELOAD)
+        client:SetAnimation(PLAYER_RELOAD)
 
         local reloadSound, reloadSoundLevel, reloadSoundPitch, reloadSoundVolume, reloadSoundChannel = self.Reloading.Sound, self.Reloading.SoundLevel, self.Reloading.SoundPitch, self.Reloading.SoundVolume, self.Reloading.SoundChannel
         self:EmitSound(reloadSound, reloadSoundLevel or 60, reloadSoundPitch or 100, reloadSoundVolume or 1, reloadSoundChannel or CHAN_ITEM)
@@ -145,8 +145,8 @@ function SWEP:Reload()
         self:SetReloading(false)
 
         local ammo = self.Primary.ClipSize - self:Clip1()
-        local ammoToTake = math.min(ammo, ply:GetAmmoCount(self.Primary.Ammo))
-        ply:RemoveAmmo(ammoToTake, self.Primary.Ammo)
+        local ammoToTake = math.min(ammo, client:GetAmmoCount(self.Primary.Ammo))
+        client:RemoveAmmo(ammoToTake, self.Primary.Ammo)
         self:SetClip1(self:Clip1() + ammoToTake)
 
         self:SetNextPrimaryFire(CurTime() + 0.1)

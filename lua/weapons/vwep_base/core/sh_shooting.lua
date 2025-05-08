@@ -8,11 +8,11 @@ function SWEP:CanPrimaryAttack()
     if ( self:GetNextSecondaryFire() > CurTime() ) then return false, "next secondary fire" end
 
     if ( self.Primary.CanMove ) then
-        local ply = self:GetOwner()
-        if ( !IsValid(ply) ) then return false, "invalid owner" end
+        local client = self:GetOwner()
+        if ( !IsValid(client) ) then return false, "invalid owner" end
 
-        local runSpeed = ply:GetRunSpeed()
-        local vel = ply:GetVelocity():Length2D() / runSpeed
+        local runSpeed = client:GetRunSpeed()
+        local vel = client:GetVelocity():Length2D() / runSpeed
         vel = math.Clamp(math.Round(vel, 2), 0, 1)
 
         if ( vel > self.Primary.RunSpeed and !self.Primary.CanMoveRun ) then
@@ -36,11 +36,11 @@ function SWEP:CanSecondaryAttack()
     if ( self:GetNextSecondaryFire() > CurTime() ) then return false, "next secondary fire" end
 
     if ( self.Secondary.CanMove ) then
-        local ply = self:GetOwner()
-        if ( !IsValid(ply) ) then return false, "invalid owner" end
+        local client = self:GetOwner()
+        if ( !IsValid(client) ) then return false, "invalid owner" end
 
-        local runSpeed = ply:GetRunSpeed()
-        local vel = ply:GetVelocity():Length2D() / runSpeed
+        local runSpeed = client:GetRunSpeed()
+        local vel = client:GetVelocity():Length2D() / runSpeed
         vel = math.Clamp(math.Round(vel, 2), 0, 1)
 
         if ( vel > self.Secondary.RunSpeed and !self.Secondary.CanMoveRun ) then
@@ -87,20 +87,20 @@ function SWEP:ShootEffects()
         self:PreShootEffects()
     end
 
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
     local _, duration = self:PlayAnimation(self:GetViewModelShootAnimation(), self.Primary.PlaybackRate)
     self:QueueIdle()
 
     if ( CLIENT and IsFirstTimePredicted() ) then
-        local ent = ply:GetViewModel()
-        if ( ply:ShouldDrawLocalPlayer() ) then
+        local ent = client:GetViewModel()
+        if ( client:ShouldDrawLocalPlayer() ) then
             ent = self:GetWorldModelEntity()
         end
 
         local muzzleAttachment = ent:LookupAttachment(self.Effects.MuzzleFlashAttachment or "muzzle")
-        local muzzlePos = ent:GetAttachment(muzzleAttachment) and ent:GetAttachment(muzzleAttachment).Pos or ply:GetShootPos()
+        local muzzlePos = ent:GetAttachment(muzzleAttachment) and ent:GetAttachment(muzzleAttachment).Pos or client:GetShootPos()
 
         if ( IsValid(ent) and self.Effects.MuzzleFlash ) then
             local effectData = EffectData()
@@ -114,8 +114,8 @@ function SWEP:ShootEffects()
 
         if ( self.Effects.Shell ) then
             local effectData = EffectData()
-            effectData:SetEntity(ply)
-            effectData:SetAttachment(ply:LookupAttachment("shell"))
+            effectData:SetEntity(client)
+            effectData:SetAttachment(client:LookupAttachment("shell"))
             effectData:SetScale(self.Effects.ShellScale or 1)
             effectData:SetFlags(self.Effects.ShellFlags or 1)
 
@@ -124,11 +124,11 @@ function SWEP:ShootEffects()
 
         if ( self.Effects.TracerCustom and self.Effects.TracerEffect ) then
             local tracerOffset = self.Effects.TracerOffset or Vector(0, 0, 0)
-            local startPos = muzzlePos + ply:GetAimVector() * tracerOffset.x + ply:GetRight() * tracerOffset.y + ply:GetUp() * tracerOffset.z
+            local startPos = muzzlePos + client:GetAimVector() * tracerOffset.x + client:GetRight() * tracerOffset.y + client:GetUp() * tracerOffset.z
             local trace = util.TraceLine({
-                start = ply:GetShootPos(),
-                endpos = ply:GetShootPos() + ply:GetAimVector() * 16384,
-                filter = ply
+                start = client:GetShootPos(),
+                endpos = client:GetShootPos() + client:GetAimVector() * 16384,
+                filter = client
             })
 
             local endPos = trace.HitPos
@@ -143,14 +143,14 @@ function SWEP:ShootEffects()
             local func = data.Function
 
             timer.Simple(time, function()
-                if ( IsValid(self) and IsValid(ply) and func ) then
-                    func(self, ply)
+                if ( IsValid(self) and IsValid(client) and func ) then
+                    func(self, client)
                 end
             end)
         end
     end
 
-    ply:SetAnimation(PLAYER_ATTACK1)
+    client:SetAnimation(PLAYER_ATTACK1)
 
     if ( self.PumpAction and self.PumpAction.Enabled ) then
         timer.Simple(duration, function()
@@ -203,8 +203,8 @@ function SWEP:Shoot()
     self:EmitSound(self.Primary.Sound, self.Primary.SoundLevel or 100, self.Primary.SoundPitch or 100, self.Primary.SoundVolume or 1, self.Primary.SoundChannel or CHAN_WEAPON)
     self:TakePrimaryAmmo(1)
 
-    local ply = self:GetOwner()
-    if ( IsValid(ply) ) then
+    local client = self:GetOwner()
+    if ( IsValid(client) ) then
         local recoilAngle = Angle(-1, math.random(-1, 1), 0)
 
         if ( self:GetIronSights() ) then
@@ -213,10 +213,10 @@ function SWEP:Shoot()
             recoilAngle = recoilAngle * self.Primary.Recoil
         end
 
-        ply:ViewPunch(recoilAngle)
+        client:ViewPunch(recoilAngle)
 
         if ( IsFirstTimePredicted() or game.SinglePlayer() ) then
-            ply:SetEyeAngles(ply:EyeAngles() + recoilAngle * 0.75)
+            client:SetEyeAngles(client:EyeAngles() + recoilAngle * 0.75)
         end
     end
 end

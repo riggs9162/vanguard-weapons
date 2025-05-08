@@ -42,10 +42,10 @@ end
 
 SWEP.ViewModelElementsStored = SWEP.ViewModelElementsStored or {}
 
-function SWEP:PreDrawViewModel(vm, weapon, ply)
+function SWEP:PreDrawViewModel(vm, weapon, client)
     if ( !IsValid(vm) ) then return end
     if ( !IsValid(weapon) ) then return end
-    if ( !IsValid(ply) ) then return end
+    if ( !IsValid(client) ) then return end
 
     vm:SetModel(self.ViewModel or "")
     vm:SetMaterial(self.ViewModelMaterial or "")
