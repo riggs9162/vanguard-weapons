@@ -52,7 +52,7 @@ function SWEP:DoCyclingReload()
     else
         self:SetReloading(false)
         self:SetCycling(false)
-        
+
         if ( sequenceExit ) then
             local _, duration = self:PlayAnimation(sequenceExit, self.Cycling.PlaybackRate)
             self:SetCyclingWait(CurTime() + duration + ( self.Cycling.Delay or 0 ))
@@ -132,6 +132,10 @@ function SWEP:Reload()
         client:SetAnimation(PLAYER_RELOAD)
 
         local reloadSound, reloadSoundLevel, reloadSoundPitch, reloadSoundVolume, reloadSoundChannel = self.Reloading.Sound, self.Reloading.SoundLevel, self.Reloading.SoundPitch, self.Reloading.SoundVolume, self.Reloading.SoundChannel
+        if ( clip <= 0 ) then
+            reloadSound = self.Reloading.SoundEmpty or self.Reloading.Sound
+        end
+
         self:EmitSound(reloadSound, reloadSoundLevel or 60, reloadSoundPitch or 100, reloadSoundVolume or 1, reloadSoundChannel or CHAN_ITEM)
     end
 
