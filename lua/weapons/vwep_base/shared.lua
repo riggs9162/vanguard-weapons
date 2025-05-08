@@ -350,8 +350,46 @@ function SWEP:SetupDataTables()
     -- Pumping
     self:NetworkVar("Bool", 7, "Pumping")
 
+    self:NetworkVar("Bool", 8, "Deploying")
+    self:NetworkVar("Bool", 9, "Holstering")
+    self:NetworkVar("Bool", 10, "Raised")
+
     if ( self.PostSetupDataTables ) then
         self:PostSetupDataTables()
+    end
+end
+
+function SWEP:Reset()
+    self:SetIronSights(false)
+    self:SetReloading(false)
+    self:SetNextIdle(0)
+    self:SetWalking(false)
+    self:SetWalkingWait(0)
+    self:SetRunning(false)
+    self:SetRunningWait(0)
+    self:SetCycling(false)
+    self:SetCyclingWait(0)
+    self:SetWinding(false)
+    self:SetWindedUp(false)
+    self:SetWindingStart(0)
+    self:SetWindingCooldown(0)
+    self:SetPumping(false)
+    self:SetDeploying(false)
+    self:SetHolstering(false)
+    self:SetRaised(true)
+    self:SetNextPrimaryFire(0)
+    self:SetNextSecondaryFire(0)
+
+    -- We might've set the viewmodel material to something else, so we need to reset it
+    if ( CLIENT ) then
+        timer.Simple(0, function()
+            if ( IsValid(self) and IsValid(self:GetOwner()) ) then
+                local vm = self:GetOwner().GetViewModel and self:GetOwner():GetViewModel() or nil
+                if ( IsValid(vm) ) then
+                    vm:SetMaterial("")
+                end
+            end
+        end)
     end
 end
 
@@ -367,25 +405,21 @@ function SWEP:Initialize()
     self:SetWeaponHoldType(self.HoldType)
     self:SetFireMode(1)
 
-    self:SetIronSights(false)
-    self:SetReloading(false)
-    self:SetNextIdle(0)
-    self:SetWalking(false)
-    self:SetWalkingWait(0)
-    self:SetRunning(false)
-    self:SetRunningWait(0)
-    self:SetCycling(false)
-    self:SetCyclingWait(0)
-    self:SetWinding(false)
-    self:SetWindedUp(false)
-    self:SetWindingStart(0)
-    self:SetWindingCooldown(0)
-    self:SetPumping(false)
-    self:SetNextPrimaryFire(0)
-    self:SetNextSecondaryFire(0)
+    self:Reset()
 
     if ( self.PostInitialize ) then
         self:PostInitialize()
+    end
+end
+
+function SWEP:SetWeaponRaised(bRaise)
+    if ( bRaise and self.DeployAnim ) then
+        self:PlayAnimation(self.DeployAnim)
+        self:QueueIdle()
+        self:SetRaised(true)
+    elseif ( !bRaise and self.HolsterAnim ) then
+        self:PlayAnimation(self.HolsterAnim)
+        self:SetRaised(false)
     end
 end
 
@@ -415,8 +449,8 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:ThinkIdle()
-    -- Don't idle if cycling or reloading
-    if ( self:GetCycling() or self:GetReloading() ) then return end
+    -- Don't idle if we're cycling, reloading, deploying, holstering or not raised
+    if ( self:GetCycling() or self:GetReloading() or self:GetDeploying() or self:GetHolstering() or !self:GetRaised() ) then return end
 
     if ( !self:GetNextIdle() ) then
         self:SetNextIdle(0)
@@ -443,13 +477,13 @@ end
 
 function SWEP:ThinkWalking()
     if ( !self.Walking or !self.Walking.Enabled ) then return end
-    if ( self:GetReloading() or self:GetCycling() ) then return end
+    if ( self:GetCycling() or self:GetReloading() or self:GetDeploying() or self:GetHolstering() or !self:GetRaised() ) then return end
 
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
-    if ( !ply:OnGround() ) then return end
-    if ( ply:WaterLevel() > 0 ) then return end
-    if ( ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_LADDER ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
+    if ( !client:OnGround() ) then return end
+    if ( client:WaterLevel() > 0 ) then return end
+    if ( client:GetMoveType() == MOVETYPE_NOCLIP or client:GetMoveType() == MOVETYPE_LADDER ) then return end
 
     local clip = self:Clip1()
     local empty = clip <= 0
@@ -484,7 +518,7 @@ function SWEP:ThinkWalking()
         sequenceEnter = sequenceLoop
     end
 
-    local walking = !ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
+    local walking = !client:KeyDown(IN_SPEED) and client:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
     if ( walking and !self:GetWalking() ) then
         self:SetWalking(true)
 
@@ -516,13 +550,13 @@ end
 
 function SWEP:ThinkRunning()
     if ( !self.Running or !self.Running.Enabled ) then return end
-    if ( self:GetReloading() or self:GetCycling() ) then return end
+    if ( self:GetCycling() or self:GetReloading() or self:GetDeploying() or self:GetHolstering() or !self:GetRaised() ) then return end
 
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
-    if ( !ply:OnGround() ) then return end
-    if ( ply:WaterLevel() > 0 ) then return end
-    if ( ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_LADDER ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
+    if ( !client:OnGround() ) then return end
+    if ( client:WaterLevel() > 0 ) then return end
+    if ( client:GetMoveType() == MOVETYPE_NOCLIP or client:GetMoveType() == MOVETYPE_LADDER ) then return end
 
     local clip = self:Clip1()
     local empty = clip <= 0
@@ -557,7 +591,7 @@ function SWEP:ThinkRunning()
         sequenceEnter = sequenceLoop
     end
 
-    local running = ply:KeyDown(IN_SPEED) and ply:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
+    local running = client:KeyDown(IN_SPEED) and client:GetVelocity():LengthSqr() > self.IronSightsRunSpeed ^ 2
     if ( running and !self:GetRunning() ) then
         self:SetRunning(true)
 
@@ -589,17 +623,18 @@ end
 
 function SWEP:ThinkWinding()
     if ( !self.Winding or !self.Winding.Enabled ) then return end
+    if ( self:GetCycling() or self:GetReloading() or self:GetDeploying() or self:GetHolstering() or !self:GetRaised() ) then return end
 
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
-    local holding = ply:KeyDown(IN_ATTACK)
+    local holding = client:KeyDown(IN_ATTACK)
     if ( holding and !self:GetWinding() and CurTime() > self:GetWindingCooldown() ) then
         self:SetWinding(true)
         self:SetWindingStart(CurTime())
 
         if ( !self.WindingSoundUp ) then
-            self.WindingSoundUp = CreateSound(ply, self.Winding.SoundUp)
+            self.WindingSoundUp = CreateSound(client, self.Winding.SoundUp)
             self.WindingSoundUp:SetSoundLevel(self.Winding.SoundUpLevel or 60)
             self.WindingSoundUp:Play()
         elseif ( self.WindingSoundUp and !self.WindingSoundUp:IsPlaying() ) then
@@ -650,8 +685,8 @@ function SWEP:ThinkWinding()
 end
 
 function SWEP:Think()
-    local ply = self:GetOwner()
-    if ( !IsValid(ply) ) then return end
+    local client = self:GetOwner()
+    if ( !IsValid(client) ) then return end
 
     if ( self.PreThink ) then
         self:PreThink()
@@ -675,30 +710,50 @@ function SWEP:Think()
     end
 end
 
+-- check for multiple ways to check if the weapon is raised due to different addons, frameworks, etc.
+local function IsWepRaisedExists(client)
+    if ( !IsValid(client) ) then return false end
+
+    local weapon = client:GetActiveWeapon()
+    if ( !IsValid(weapon) or !weapon:IsWeapon() ) then return false end
+
+    if ( client.IsWepRaised ) then
+        return true
+    end
+
+    if ( client.IsWeaponRaised ) then
+        return true
+    end
+
+    return false
+end
+
 function SWEP:Deploy()
     if ( self.PreDeploy ) then
         self:PreDeploy()
     end
 
-    self:SetIronSights(false)
-    self:SetReloading(false)
-    self:SetNextIdle(0)
-    self:SetWalking(false)
-    self:SetWalkingWait(0)
-    self:SetRunning(false)
-    self:SetRunningWait(0)
-    self:SetCycling(false)
-    self:SetCyclingWait(0)
-    self:SetWinding(false)
-    self:SetWindedUp(false)
-    self:SetWindingStart(0)
-    self:SetWindingCooldown(0)
-    self:SetPumping(false)
-    self:SetNextPrimaryFire(CurTime() + 1)
-    self:SetNextSecondaryFire(CurTime() + 1)
+    self:Reset()
 
-    self:PlayAnimation(self.DeployAnim or ACT_VM_DRAW)
-    self:QueueIdle()
+    local isWepRaisedExists = IsWepRaisedExists(self:GetOwner())
+    if ( isWepRaisedExists ) then
+        if ( self.HolsterAnim ) then
+            self:PlayAnimation(self.HolsterAnim or ACT_VM_HOLSTER)
+            self:SetRaised(false)
+        end
+    else
+        if ( self.DeployAnim and !self:GetDeploying() ) then
+            local _, duration = self:PlayAnimation(self.DeployAnim)
+            self:QueueIdle()
+            self:SetDeploying(true)
+
+            timer.Simple(duration, function()
+                if ( !IsValid(self) ) then return end
+
+                self:SetDeploying(false)
+            end)
+        end
+    end
 
     self:SetHoldType(self.HoldType)
 
@@ -712,39 +767,36 @@ function SWEP:Deploy()
     return true
 end
 
-function SWEP:Holster()
+function SWEP:Holster(targetWeapon)
     if ( self.PreHolster ) then
         self:PreHolster()
     end
 
-    self:SetIronSights(false)
-    self:SetReloading(false)
-    self:SetNextIdle(0)
-    self:SetWalking(false)
-    self:SetWalkingWait(0)
-    self:SetRunning(false)
-    self:SetRunningWait(0)
-    self:SetCycling(false)
-    self:SetCyclingWait(0)
-    self:SetWinding(false)
-    self:SetWindedUp(false)
-    self:SetWindingStart(0)
-    self:SetWindingCooldown(0)
-    self:SetPumping(false)
-    self:SetNextPrimaryFire(0)
-    self:SetNextSecondaryFire(0)
+    -- Don't ask me how I got this to work, but it does
+    -- Holstering is a mess, so don't touch it unless you know what you're doing
+    print(self.HolsterAnim, self:GetHolstering(), self:GetRaised())
+    if ( self.HolsterAnim and !self:GetHolstering() and self:GetRaised() ) then
+        local _, duration = self:PlayAnimation(self.HolsterAnim)
+        self:SetHolstering(true)
 
-    -- We might've set the viewmodel material to something else, so we need to reset it
-    if ( CLIENT ) then
-        timer.Simple(0, function()
-            if ( IsValid(self) and IsValid(self:GetOwner()) ) then
-                local vm = self:GetOwner().GetViewModel and self:GetOwner():GetViewModel() or nil
-                if ( IsValid(vm) ) then
-                    vm:SetMaterial("")
+        timer.Simple(duration, function()
+            if ( !IsValid(self) ) then return end
+
+            self:Holster(targetWeapon)
+            self:SetHolstering(true)
+
+            timer.Simple(0, function()
+                local client = self:GetOwner()
+                if ( IsValid(client) and SERVER ) then
+                    client:SelectWeapon(targetWeapon)
                 end
-            end
+            end)
         end)
+
+        return false
     end
+
+    self:Reset()
 
     if ( self.PostHolster ) then
         self:PostHolster()
